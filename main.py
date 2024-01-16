@@ -11,88 +11,115 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI()
 client = MongoClient("mongodb://localhost:27017/")
 database = client.students
-collection = database.get_collection("whatsapp")
+collection = database.get_collection("whatsapp1")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# declaring schema of the classes
 class groupMessages(BaseModel):
+    _id : str
     group_number : int
-    messages : List[str] # type: ignore
+    group_admins : List[str]
+    members : dict
+    start_date : str
+    end_date : str
+    content : dict 
 
 class updateGroupMessages(BaseModel):
-    messages : Optional[List[str]] = None # type: ignore
+    group_admins : Optional[List[str]] = None
+    members : Optional[dict] = None
+    end_date : Optional[str] = None
+    content : Optional[dict] = None 
 
-def message_decoder(message):
-    return {
-        "id": message["id"],
-        "time" : message["time"],
-        "content" : message["content"]
-    }
 
-# Retrieve all messages with some logic
-async def get_messages(grp_number):
-    messages = []
+# Retrieve Group Inforamtion
+async def fetchGroupInfo(grp_number):
     data =  collection.find_one({"group_number": grp_number})
-    for msg in data["messages"]: # type: ignore
-        messages.append(msg)
-    return messages
+    if data != None:   # no such group number
+        return data
+    return None
+
+# GET REQUESTS
+@app.get("/admins/{group_number}")
+async def getAdmins(group_number : int):
+    data =  await fetchGroupInfo(group_number)
+    if data == None:
+        return None
+    return data["group_admins"] 
 
 
 @app.get("/messages/{group_number}")
-async def showMessage(group_number:int):
-    data = await get_messages(group_number)
-    print(data)
-    return await get_messages(group_number)
+async def getMessages(group_number:int):
+    data =  await fetchGroupInfo(group_number)
+    if data == None:
+        return None
+    return data["content"]
 
 @app.get("/")
 async def root():
-    return "Hello,Wopird"  
+    return "Hello,World"  
 
 @app.get("/html", response_class=HTMLResponse)
 async def read_item(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})  
 
-
+# POST REQUESTS
 @app.post("/")
 async def addMessage(grpmsg : groupMessages):
     data =  collection.insert_one(grpmsg.model_dump())
     return "Message added to the database"
 
+
+# UPDATE REQUESTS
 @app.put("/update/{group_number}")
 async def updateMessage(group_number:int,new_messages:updateGroupMessages):
-    print(new_messages.model_dump()['messages'])
-    data =  collection.find_one({"group_number": group_number})
+    print(new_messages.model_dump())
+    newGroupInformation = new_messages.model_dump()
+    data =  await fetchGroupInfo(group_number)
+
     if data!= None:
-        print("inside")
-        print(data['messages'])
-        data["messages"].extend(new_messages.model_dump()['messages'])
-        print(data['messages'])
-        # new messages will be in form of list say [m1,m2,m3......]
-        update_data = collection.find_one_and_update(
-                {"group_number": group_number},
-                {"$set": {"messages":data["messages"]} }
+        # adding new messages to content and updating it in database
+        if "content" in newGroupInformation:
+            data["content"].update(newGroupInformation["content"])
+            update_data = collection.find_one_and_update(
+                    {"group_number": group_number},
+                    {"$set": {"content" : data["content"]}}
+                )
+        # print(data['content'])
+
+        # if End Date is provided update it
+        if "end_date" in newGroupInformation:
+            if newGroupInformation["end_date"] != "NA":
+                data["end_date"] = newGroupInformation["end_date"]
+                update_data = collection.find_one_and_update(
+                    {"group_number": group_number},
+                    {"$set": {"end_date" : data["end_date"]}}
+                )
+        
+        # change in group members
+        if "members" in newGroupInformation:
+            newGroupMembers = newGroupInformation["members"]
+            for member in newGroupMembers:
+                data["members"][member] = newGroupInformation["members"][member]
+
+            update_data = collection.find_one_and_update(
+                    {"group_number": group_number},
+                    {"$set": {"members" : data["members"]}}
             )
+            
+                    
+        # update_data = collection.find_one_and_update(
+        #         {"group_number": group_number},
+        #         {"$set": {
+        #                 "members" : data["members"],
+        #                 "end_date": data["end_date"],
+        #                 "content" : data["content"]
+        #                 } 
+        #         }
+        # )
 
     return "Message updated to the database"
     
 
-
-# schema example 
-# {
-#   "_id": {
-#     "$oid": "654005999477c954ba744cff"
-#   },
-#   "group_number": 1,
-#   "messages_1": [
-#     {
-#       "id": 1,
-#       "content": "hi sir"
-#     },
-#     {
-#       "id": 2,
-#       "content": "hi sir1"
-#     }
-#   ]
-# }
 
