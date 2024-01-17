@@ -191,20 +191,20 @@ class Group:
             exit(1)
 
 
-def update_group_structure(path, system_messages, updated_lines, group):
-    try:
-        json_key = {}
-        json_key["_id"] = group.get_group_id()
-        json_key["group_name"] = group.get_group_name(path)
-        json_key["group_admins"] = group.get_group_admins(system_messages)
-        json_key['members'] = group.get_group_members(system_messages)
-        json_key["start_date"] = group.get_start_date(system_messages)
-        json_key["end_date"] = group.get_end_date(system_messages)
-        json_key["content"] = group.get_group_data(updated_lines)
-        return json_key
-    except:
-        print("Error in updating group structure (update_group_structure() function).")
-        exit(1)
+    def update_group_structure(self, path, system_messages, updated_lines):
+        try:
+            json_key = {}
+            json_key["_id"] = self.get_group_id()
+            json_key["group_name"] = self.get_group_name(path)
+            json_key["group_admins"] = self.get_group_admins(system_messages)
+            json_key['members'] = self.get_group_members(system_messages)
+            json_key["start_date"] = self.get_start_date(system_messages)
+            json_key["end_date"] = self.get_end_date(system_messages)
+            json_key["content"] = self.get_group_data(updated_lines)
+            return json_key
+        except:
+            print("Error in updating group structure (update_group_structure() function).")
+            exit(1)
 
 
 class Message:
@@ -325,23 +325,28 @@ def update_message_structure(lines, path, msg, grp):
         exit(1)
 
 
-def main(path):
+def main(path, store=True):
     try:
         lines = get_file_content(path)
         message = Message()
-        group = Group()
+        group_schema = Group()
         user_schema = User()
 
 
-        updated_lines = update_message_structure(lines, path, message, group)
-        store_json(updated_lines, "message_structure_1.json")
+        updated_lines = update_message_structure(lines, path, message, group_schema)
+        if store:
+            store_json(updated_lines, "message_structure_1.json")
         system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
-        group_json = update_group_structure(path, system_messages, updated_lines, group)
-        store_json(group_json, "group wise schema_1.json")
+
+        group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
+        if store:
+            store_json(group_json, "group wise schema_1.json")
 
         # user_json = update_user_structure(path, user_messages, user_schema)
         # print(user_json)
-        # store_json(user_json, "user wise schema.json")
+        # if store:
+        #     store_json(user_json, "user wise schema.json")
+        
         # push_to_mongo(group_json)
     except:
         print("Error in converting the data to json (main() function).")
@@ -360,12 +365,12 @@ def check_all_files():
 
 if __name__ == "__main__":
     try:
-        path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
+        # path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
         # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
         # path = "Whatsapp Chats\WhatsApp Chat with AI Monsoon 22-23.txt"
         # path = "Whatsapp Chats\WhatsApp Chat with THE 7 Semester of Sinister 7😨.txt"
-        main(path)
-        # check_all_files()
+        # main(path)
+        check_all_files()
     except:
         print("Error in calling main() function.")
         exit(1)
