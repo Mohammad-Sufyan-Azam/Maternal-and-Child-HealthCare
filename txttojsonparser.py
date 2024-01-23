@@ -20,15 +20,15 @@ import json, pymongo
 import random, string, os
 
 
-def get_file_content(path):
-    try:
-        file = open(path, encoding="utf8")
-        lines = file.readlines()
-        file.close()
-        return lines
-    except:
-        print("Error in reading file. (Make sure the file exists)")
-        exit(1)
+# def get_file_content(path):
+#     try:
+#         file = open(path, encoding="utf8")
+#         lines = file.readlines()
+#         file.close()
+#         return lines
+#     except:
+#         print("Error in reading file. (Make sure the file exists)")
+#         exit(1)
 
 
 def store_json(json_key, name="new_schema.json"):
@@ -191,20 +191,20 @@ class Group:
             exit(1)
 
 
-def update_group_structure(path, system_messages, updated_lines, group):
-    try:
-        json_key = {}
-        json_key["_id"] = group.get_group_id()
-        json_key["group_name"] = group.get_group_name(path)
-        json_key["group_admins"] = group.get_group_admins(system_messages)
-        json_key['members'] = group.get_group_members(system_messages)
-        json_key["start_date"] = group.get_start_date(system_messages)
-        json_key["end_date"] = group.get_end_date(system_messages)
-        json_key["content"] = group.get_group_data(updated_lines)
-        return json_key
-    except:
-        print("Error in updating group structure (update_group_structure() function).")
-        exit(1)
+    def update_group_structure(self, path, system_messages, updated_lines):
+        try:
+            json_key = {}
+            json_key["_id"] = self.get_group_id()
+            json_key["group_name"] = self.get_group_name(path)
+            json_key["group_admins"] = self.get_group_admins(system_messages)
+            json_key['members'] = self.get_group_members(system_messages)
+            json_key["start_date"] = self.get_start_date(system_messages)
+            json_key["end_date"] = self.get_end_date(system_messages)
+            json_key["content"] = self.get_group_data(updated_lines)
+            return json_key
+        except:
+            print("Error in updating group structure (update_group_structure() function).")
+            exit(1)
 
 
 class Message:
@@ -325,95 +325,86 @@ def update_message_structure(lines, path, msg, grp):
         exit(1)
 
 
-def main(path):
+def mainJSONParser(lines, store=True):
     try:
-        lines = get_file_content(path)
+        # lines = get_file_content(path)
         message = Message()
-        group = Group()
+        group_schema = Group()
         user_schema = User()
+        path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
 
-
-        updated_lines = update_message_structure(lines, path, message, group)
-        store_json(updated_lines, "message_structure_1.json")
+        updated_lines = update_message_structure(lines, path, message, group_schema)
+        if store:
+            store_json(updated_lines, "message_structure_2.json")
         system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
-        group_json = update_group_structure(path, system_messages, updated_lines, group)
-        store_json(group_json, "group wise schema_1.json")
+
+        group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
+        if store:
+            store_json(group_json, "group wise schema_2.json")
 
         # user_json = update_user_structure(path, user_messages, user_schema)
         # print(user_json)
-        # store_json(user_json, "user wise schema.json")
+        # if store:
+        #     store_json(user_json, "user wise schema.json")
+        
         # push_to_mongo(group_json)
     except:
         print("Error in converting the data to json (main() function).")
         exit(1)
 
 
-def check_all_files():
-    dir = "Whatsapp Chats"
-    files = os.listdir(dir)
-    for file in files:
-        path = "Whatsapp Chats/" + file
-        main(path)
+# def mainJSON(path, store=True):
+#     try:
+#         lines = get_file_content(path)
+#         message = Message()
+#         group_schema = Group()
+#         user_schema = User()
+
+
+#         updated_lines = update_message_structure(lines, path, message, group_schema)
+#         if store:
+#             store_json(updated_lines, "message_structure_1.json")
+#         system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
+
+#         group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
+#         if store:
+#             store_json(group_json, "group wise schema_1.json")
+
+#         # user_json = update_user_structure(path, user_messages, user_schema)
+#         # print(user_json)
+#         # if store:
+#         #     store_json(user_json, "user wise schema.json")
+        
+#         # push_to_mongo(group_json)
+#     except:
+#         print("Error in converting the data to json (main() function).")
+#         exit(1)
+
+
+# def check_all_files():
+#     dir = "Whatsapp Chats"
+#     files = os.listdir(dir)
+#     for file in files:
+#         path = "Whatsapp Chats/" + file
+#         mainJSON(path)
     
-    return True
+#     return True
 
 
-if __name__ == "__main__":
-    try:
-        path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
-        # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
-        # path = "Whatsapp Chats\WhatsApp Chat with AI Monsoon 22-23.txt"
-        # path = "Whatsapp Chats\WhatsApp Chat with THE 7 Semester of Sinister 7😨.txt"
-        main(path)
-        # check_all_files()
-    except:
-        print("Error in calling main() function.")
-        exit(1)
+# if __name__ == "__main__":
+#     try:
+#         path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
+#         # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
+#         # path = "Whatsapp Chats\WhatsApp Chat with AI Monsoon 22-23.txt"
+#         # path = "Whatsapp Chats\WhatsApp Chat with THE 7 Semester of Sinister 7😨.txt"
+#         # main(path)
+#         # check_all_files()
+#         abc = get_file_content(path)
+#         print(abc)
+#     except:
+#         print("Error in calling main() function.")
+#         exit(1)
 
-
-
-
-'''
-        VM done. Hugging face models trash, BingAI superior. GET request done, POST request needs to be done. Integration left only. Group wise schema and message structure done.
-        in current and past memebers seperate list, the problem is that we get members whose status is updated periodically after every export.
-        So, if i need to delete a member then i'll put into the past_members list in the next export. Then I need to search and remove that participant in the current
-        members list. Similarly, if i need to add a participant then i need to search and remove it from the past members list first.
-        --> However, if i use the dictionary format then the searching will be done in O(1) time.
-
-        For admin status update no system generated message is generated.
-        For participants that were added before group creation, on system generated messages are generated.
-        For giving pseudo names, ask sir that should we do it or let admin handle that (More privacy in that).
-        Also, if the person who is exporting the chat sends messages then it comes by his/her name, which is good.
-        Assumption: participants name does not contain 'removed', 'left', or 'added' in it.
-        Add the expected end date of a group according to the information provided beforehand by experts. Current structure puts it into NA.
-        Is there a need to store system generated messages? If we store them then we can cross-verify the data, that's all.
-        Right now the group wise schema segregates messages based on each day having a different list. We can change it to anything.
-        Sometimes the messsages that are sent to whatsapp have a timestamp that is lower than the previous message. Due to this, the group wise schema messages
-        may be out of order. We can fix this by sorting the messages based on timestamp.
-        Written the entire code in OOPS format with try except statements in each function.
-        Are the group names going to be unique? Asking so that we can use group name in the user schema as a key to identify the group.
-        Have checked sending messages from different platforms like whatsapp desktop, whatsapp mobile. The system generated messaged do not suffer much change.
-        Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?
-        
-        In the user schema, is the start date in the affiliated groups the date when the user joined the group or the date when the group was created?
-        
-'''
-
-'''
-Add the expected end date of a group according to the information provided beforehand by experts. Current structure puts it into NA.
-Is there a need to store system generated messages? If we store them then we can cross-verify the data, that's all.     NO NEED, BUT STORE IT
-Right now the group wise schema segregates messages based on each day having a different list. We can change it to anything.
-For admin status update no system generated message is generated.
-For participants that were added before group creation, no system generated messages are generated.              WE WILL ADD MANUALLY
-For giving pseudo names, ask sir that should we do it or let admin handle that (More privacy in that).           SIR WILL DISCUSS
-Written the entire code in OOPS format with try except statements in each function.
-Are the group names going to be unique? Asking so that we can use group name in the user schema as a key to identify the group.     YES
-Have checked sending messages from different platforms like whatsapp desktop, whatsapp mobile. The system generated messaged do not suffer much change.
-In the user schema, is the start date in the affiliated groups the date when the user joined the group or the date when the group was created?      YES
-VM done. Hugging face models trash, BingAI superior. GET request done, POST request needs to be done. Integration left only. Group wise schema and message structure done.
-Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?      DONE
-
-'''
 
 
 '''
