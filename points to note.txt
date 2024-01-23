@@ -20,8 +20,6 @@ Have checked sending messages from different platforms like whatsapp desktop, wh
 Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?
 
 In the user schema, is the start date in the affiliated groups the date when the user joined the group or the date when the group was created?
-   
-
 
 
 Add the expected end date of a group according to the information provided beforehand by experts. Current structure puts it into NA.
@@ -36,4 +34,6 @@ Have checked sending messages from different platforms like whatsapp desktop, wh
 In the user schema, is the start date in the affiliated groups the date when the user joined the group or the date when the group was created?      YES
 VM done. Hugging face models trash, BingAI superior. GET request done, POST request needs to be done. Integration left only. Group wise schema and message structure done.
 Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?      DONE
+
+
 If the tab is present in a new line for more than 2 lines then the JSON parser is not working with the current code.    TO FIX

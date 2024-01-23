@@ -1,34 +1,5 @@
-'''
-Group Wise Schema Structure that is to be stored in MongoDB:-
-
-_id : 
-Grp_name: “”
-Grp_admins: [admin1, admin2, ...]
-members: {'pd1':True, 'pd2':False, ...}
-Start_date: “”
-End_date: “”
-Content: {
-            “15/10/23”: [m1,m2……….],
-            “16/10/23”: [m1,m2………..],
-            ……………………..
-            ………..
-        }
-
-'''
-
 import json, pymongo
 import random, string, os
-
-
-# def get_file_content(path):
-#     try:
-#         file = open(path, encoding="utf8")
-#         lines = file.readlines()
-#         file.close()
-#         return lines
-#     except:
-#         print("Error in reading file. (Make sure the file exists)")
-#         exit(1)
 
 
 def store_json(json_key, name="new_schema.json"):
@@ -355,11 +326,13 @@ def mainJSONParser(lines, store=True):
 
 # def mainJSON(path, store=True):
 #     try:
-#         lines = get_file_content(path)
+#         file = open(path, encoding="utf8")
+#         lines = file.readlines()
+#         file.close()
+        
 #         message = Message()
 #         group_schema = Group()
 #         user_schema = User()
-
 
 #         updated_lines = update_message_structure(lines, path, message, group_schema)
 #         if store:
@@ -395,12 +368,8 @@ def mainJSONParser(lines, store=True):
 #     try:
 #         path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
 #         # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
-#         # path = "Whatsapp Chats\WhatsApp Chat with AI Monsoon 22-23.txt"
-#         # path = "Whatsapp Chats\WhatsApp Chat with THE 7 Semester of Sinister 7😨.txt"
-#         # main(path)
+#         # mainJSON(path)
 #         # check_all_files()
-#         abc = get_file_content(path)
-#         print(abc)
 #     except:
 #         print("Error in calling main() function.")
 #         exit(1)
