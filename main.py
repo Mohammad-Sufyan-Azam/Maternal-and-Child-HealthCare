@@ -1,5 +1,6 @@
 from typing import Optional,List
-from fastapi import Body, FastAPI, Request
+from click import File
+from fastapi import Body, FastAPI, Request, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -7,13 +8,14 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from pymongo import MongoClient
 from fastapi.templating import Jinja2Templates
+import txttojsonparser as parser
 
 app = FastAPI()
 client = MongoClient("mongodb://localhost:27017/")
 database = client.students
 collection = database.get_collection("whatsapp1")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # declaring schema of the classes
@@ -121,5 +123,17 @@ async def updateMessage(group_number:int,new_messages:updateGroupMessages):
 
     return "Message updated to the database"
     
+import shutil
 
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    content = await file.read()
+    utf8_content = content.decode('utf-8')
+    content = utf8_content.split('\n')
+    # content = [i+'\n' for i in content]
 
+    # print(content)
+    parser.mainJSONParser(content)
+    # print(utf8_content)
+
+    return {"filename": file.filename}
