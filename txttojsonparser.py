@@ -309,8 +309,8 @@ def mainJSONParser(content, file_name, store=True):
 
         group_json = group_schema.update_group_structure(file_name, system_messages, updated_lines)
         if store:
-            store_json(group_json, "group wise schema_2.json")
-
+            return group_json
+            
         # user_json = update_user_structure(path, user_messages, user_schema)
         # print(user_json)
         # if store:
