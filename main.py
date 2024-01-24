@@ -1,3 +1,5 @@
+import asyncio
+import json
 from typing import Optional,List
 from click import File
 from fastapi import Body, FastAPI, Request, UploadFile
@@ -36,27 +38,28 @@ class updateGroupMessages(BaseModel):
 
 
 # Retrieve Group Inforamtion
-async def fetchGroupInfo(grp_number):
-    data =  collection.find_one({"group_number": grp_number})
+async def fetchGroupInfo(group_name):
+    data =  collection.find_one({"group_name": group_name})
     if data != None:   # no such group number
         return data
     return None
 
 # GET REQUESTS
-@app.get("/admins/{group_number}")
-async def getAdmins(group_number : int):
-    data =  await fetchGroupInfo(group_number)
-    if data == None:
-        return None
-    return data["group_admins"] 
+
+# @app.get("/admins/{group_number}")
+# async def getAdmins(group_number : int):
+#     data =  await fetchGroupInfo(group_number)
+#     if data == None:
+#         return None
+#     return data["group_admins"] 
 
 
-@app.get("/messages/{group_number}")
-async def getMessages(group_number:int):
-    data =  await fetchGroupInfo(group_number)
-    if data == None:
-        return None
-    return data["content"]
+# @app.get("/messages/{group_number}")
+# async def getMessages(group_number:int):
+#     data =  await fetchGroupInfo(group_number)
+#     if data == None:
+#         return None
+#     return data["content"]
 
 @app.get("/")
 async def root():
@@ -66,26 +69,34 @@ async def root():
 async def read_item(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})  
 
-# POST REQUESTS
-@app.post("/")
-async def addMessage(grpmsg : groupMessages):
-    data =  collection.insert_one(grpmsg.model_dump())
-    return "Message added to the database"
-
 
 # UPDATE REQUESTS
-@app.put("/update/{group_number}")
-async def updateMessage(group_number:int,new_messages:updateGroupMessages):
+
+
+async def addMessage(grpmsg : groupMessages):
+    print(grpmsg.model_dump())
+    data =  collection.insert_one(grpmsg.model_dump())
+    return "Message added to the database"
+    
+
+def fetchGroupNames():
+    documents = collection.find({}, {'group_name': 1}) 
+    groupNames = {document['group_name'] for document in documents}
+    print(type(groupNames))
+    return groupNames
+
+
+async def updateGroupMessage(group_name:str,new_messages):
     print(new_messages.model_dump())
     newGroupInformation = new_messages.model_dump()
-    data =  await fetchGroupInfo(group_number)
+    data =  await fetchGroupInfo(group_name)
 
     if data!= None:
         # adding new messages to content and updating it in database
         if "content" in newGroupInformation:
             data["content"].update(newGroupInformation["content"])
             update_data = collection.find_one_and_update(
-                    {"group_number": group_number},
+                    {"group_name": group_name},
                     {"$set": {"content" : data["content"]}}
                 )
         # print(data['content'])
@@ -95,7 +106,7 @@ async def updateMessage(group_number:int,new_messages:updateGroupMessages):
             if newGroupInformation["end_date"] != "NA":
                 data["end_date"] = newGroupInformation["end_date"]
                 update_data = collection.find_one_and_update(
-                    {"group_number": group_number},
+                    {"group_name": group_name},
                     {"$set": {"end_date" : data["end_date"]}}
                 )
         
@@ -106,34 +117,104 @@ async def updateMessage(group_number:int,new_messages:updateGroupMessages):
                 data["members"][member] = newGroupInformation["members"][member]
 
             update_data = collection.find_one_and_update(
-                    {"group_number": group_number},
+                    {"group_name": group_name},
                     {"$set": {"members" : data["members"]}}
             )
             
-                    
-        # update_data = collection.find_one_and_update(
-        #         {"group_number": group_number},
-        #         {"$set": {
-        #                 "members" : data["members"],
-        #                 "end_date": data["end_date"],
-        #                 "content" : data["content"]
-        #                 } 
-        #         }
-        # )
-
     return "Message updated to the database"
-    
-import shutil
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
+
     content = await file.read()
     utf8_content = content.decode('utf-8')
     content = utf8_content.split('\n')
-    # content = [i+'\n' for i in content]
+    data = parser.mainJSONParser(content)
+    groupNames = fetchGroupNames()
 
-    # print(content)
-    parser.mainJSONParser(content)
-    # print(utf8_content)
+    if data != None:
+        if data['group_name'] in groupNames:
+            # then update
+            flag = await updateGroupMessage(data["group_name"],data)
+        else:
+            flag = collection.insert_one(data)
+            return "Message added to the db for the first time"
+    else:
+        return "Error in Data"
 
-    return {"filename": file.filename}
+   
+
+
+    # IGNORE ----------------------------
+
+    # name = str(file.filename)[:-4]
+    # instead of making a json file, this returns a json
+    # await asyncio.sleep(2)
+    # f =  open('json output\group wise schema_2.json')  # to be replaced with name
+    # f =  open('example.json')
+    # data =  json.load(f)
+    # # print(data)
+    # flag = collection.insert_one(data)
+    # f.close()
+
+   
+
+
+# ROUGH
+
+# POST REQUESTS
+# @app.post("/")
+# async def addMessage(grpmsg : groupMessages):
+#     print(grpmsg.model_dump())
+#     data =  collection.insert_one(grpmsg.model_dump())
+#     return "Message added to the database"
+
+
+# @app.put("/update/{group_number}")
+# async def updateMessage(group_number:int,new_messages:updateGroupMessages):
+#     print(new_messages.model_dump())
+#     newGroupInformation = new_messages.model_dump()
+#     data =  await fetchGroupInfo(group_number)
+
+#     if data!= None:
+#         # adding new messages to content and updating it in database
+#         if "content" in newGroupInformation:
+#             data["content"].update(newGroupInformation["content"])
+#             update_data = collection.find_one_and_update(
+#                     {"group_number": group_number},
+#                     {"$set": {"content" : data["content"]}}
+#                 )
+#         # print(data['content'])
+
+#         # if End Date is provided update it
+#         if "end_date" in newGroupInformation:
+#             if newGroupInformation["end_date"] != "NA":
+#                 data["end_date"] = newGroupInformation["end_date"]
+#                 update_data = collection.find_one_and_update(
+#                     {"group_number": group_number},
+#                     {"$set": {"end_date" : data["end_date"]}}
+#                 )
+        
+#         # change in group members
+#         if "members" in newGroupInformation:
+#             newGroupMembers = newGroupInformation["members"]
+#             for member in newGroupMembers:
+#                 data["members"][member] = newGroupInformation["members"][member]
+
+#             update_data = collection.find_one_and_update(
+#                     {"group_number": group_number},
+#                     {"$set": {"members" : data["members"]}}
+#             )
+            
+                    
+#         # update_data = collection.find_one_and_update(
+#         #         {"group_number": group_number},
+#         #         {"$set": {
+#         #                 "members" : data["members"],
+#         #                 "end_date": data["end_date"],
+#         #                 "content" : data["content"]
+#         #                 } 
+#         #         }
+#         # )
+
+#     return "Message updated to the database"

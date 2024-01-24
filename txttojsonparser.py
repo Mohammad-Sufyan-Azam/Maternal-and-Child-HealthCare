@@ -52,7 +52,7 @@ def push_to_mongo(json_key):
         myquery = {"group_name": json_key["group_name"]}
         mydoc = mycol.find(myquery)
         # If document with group name 'grp' exists, then update it
-        if mydoc.count() > 0:
+        if mydoc.count() > 0: # type: ignore
             mycol.update_one(myquery, {"$set": json_key})
             print("Successfully updated MongoDB.")
             return
@@ -340,7 +340,10 @@ def mainJSONParser(lines, store=True):
 
         group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
         if store:
-            store_json(group_json, "group wise schema_2.json")
+            return group_json
+            # store_json(group_json, "group wise schema_2.json")
+            # MODIFIED
+
 
         # user_json = update_user_structure(path, user_messages, user_schema)
         # print(user_json)
