@@ -23,7 +23,7 @@ def push_to_mongo(json_key):
         myquery = {"group_name": json_key["group_name"]}
         mydoc = mycol.find(myquery)
         # If document with group name 'grp' exists, then update it
-        if mydoc.count() > 0:
+        if mydoc.count() > 0: # type: ignore
             mycol.update_one(myquery, {"$set": json_key})
             print("Successfully updated MongoDB.")
             return
