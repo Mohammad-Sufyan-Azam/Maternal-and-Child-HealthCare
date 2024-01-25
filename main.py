@@ -115,7 +115,8 @@ async def create_upload_file(file: UploadFile):
     content = await file.read()
     utf8_content = content.decode('utf-8')
     content = utf8_content.split('\n')
-    data = parser.mainJSONParser(content)
+    file_name = file.filename
+    data = parser.mainJSONParser(content, file_name)
     groupNames = fetchGroupNames()
 
     if data != None:

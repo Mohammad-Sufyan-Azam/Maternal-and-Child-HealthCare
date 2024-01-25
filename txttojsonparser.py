@@ -305,7 +305,7 @@ def mainJSONParser(content, file_name, store=True):
         updated_lines = update_message_structure(content, file_name, message, group_schema)
         # if store:
         #     store_json(updated_lines, "message_structure_2.json")
-        system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
+        system_messages, user_messages = message.get_user_and_system_messages(updated_lines) # type: ignore
 
         group_json = group_schema.update_group_structure(file_name, system_messages, updated_lines)
         if store:
