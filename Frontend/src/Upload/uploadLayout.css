@@ -1,0 +1,13 @@
+.uploadSection {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  bottom: 500px;
+}
+
+.submitButton {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
