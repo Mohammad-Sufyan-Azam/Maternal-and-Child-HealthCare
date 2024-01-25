@@ -1,34 +1,5 @@
-'''
-Group Wise Schema Structure that is to be stored in MongoDB:-
-
-_id : 
-Grp_name: “”
-Grp_admins: [admin1, admin2, ...]
-members: {'pd1':True, 'pd2':False, ...}
-Start_date: “”
-End_date: “”
-Content: {
-            “15/10/23”: [m1,m2……….],
-            “16/10/23”: [m1,m2………..],
-            ……………………..
-            ………..
-        }
-
-'''
-
 import json, pymongo
 import random, string, os
-
-
-# def get_file_content(path):
-#     try:
-#         file = open(path, encoding="utf8")
-#         lines = file.readlines()
-#         file.close()
-#         return lines
-#     except:
-#         print("Error in reading file. (Make sure the file exists)")
-#         exit(1)
 
 
 def store_json(json_key, name="new_schema.json"):
@@ -130,12 +101,12 @@ class Group:
             exit(1)
 
 
-    def get_group_name(self, path):
+    def get_group_name(self, file_name):
         try:
             # Case 1: You created group "Test"
             # Case 2: You changed the group name from "Test" to "Test Group"
             # To get the updated path we can directly access it from the file name derived from path
-            name = path.split('WhatsApp Chat with ')[1].split('.txt')[0]
+            name = file_name.split('WhatsApp Chat with ')[1].split('.txt')[0]
             return name
         except:
             print("Error in getting group name (get_group_name() function).")
@@ -191,11 +162,11 @@ class Group:
             exit(1)
 
 
-    def update_group_structure(self, path, system_messages, updated_lines):
+    def update_group_structure(self, file_name, system_messages, updated_lines):
         try:
             json_key = {}
             json_key["_id"] = self.get_group_id()
-            json_key["group_name"] = self.get_group_name(path)
+            json_key["group_name"] = self.get_group_name(file_name)
             json_key["group_admins"] = self.get_group_admins(system_messages)
             json_key['members'] = self.get_group_members(system_messages)
             json_key["start_date"] = self.get_start_date(system_messages)
@@ -263,10 +234,10 @@ class Message:
             exit(1)
 
 
-    def get_message_id(self, path, timestamp, grp, prev_id=''):
+    def get_message_id(self, file_name, timestamp, grp, prev_id=''):
         try:
             # mesage_id will be group name_timestamp_counter. Counter will be incremented for every message that has the same timestamp.
-            message_id = grp.get_group_name(path) + '_' + timestamp + '_'
+            message_id = grp.get_group_name(file_name) + '_' + timestamp + '_'
             if prev_id == '':
                 message_id += '0'
             else:
@@ -296,7 +267,7 @@ class Message:
             exit(1)
 
 
-def update_message_structure(lines, path, msg, grp):
+def update_message_structure(lines, file_name, msg, grp):
     try:
         updated_lines = []
 
@@ -315,7 +286,7 @@ def update_message_structure(lines, path, msg, grp):
             user = msg.get_user(temp)
             message = msg.get_message(temp, user)
             tag = msg.get_tag(message, user)
-            id = msg.get_message_id(path, timestamp, grp, updated_lines[-1]["message_id"] if len(updated_lines) > 0 else '')
+            id = msg.get_message_id(file_name, timestamp, grp, updated_lines[-1]["message_id"] if len(updated_lines) > 0 else '')
 
             updated_lines.append({"message_id": id, "timestamp": timestamp, "sender": user, "message": message, "tag": tag})
             # print(updated_lines[-1])
@@ -325,23 +296,21 @@ def update_message_structure(lines, path, msg, grp):
         exit(1)
 
 
-def mainJSONParser(lines, store=True):
+def mainJSONParser(content, file_name, store=True):
     try:
-        # lines = get_file_content(path)
         message = Message()
         group_schema = Group()
         user_schema = User()
-        path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
 
-        updated_lines = update_message_structure(lines, path, message, group_schema)
-        if store:
-            store_json(updated_lines, "message_structure_2.json")
+        updated_lines = update_message_structure(content, file_name, message, group_schema)
+        # if store:
+        #     store_json(updated_lines, "message_structure_2.json")
         system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
 
-        group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
+        group_json = group_schema.update_group_structure(file_name, system_messages, updated_lines)
         if store:
-            store_json(group_json, "group wise schema_2.json")
-
+            return group_json
+            
         # user_json = update_user_structure(path, user_messages, user_schema)
         # print(user_json)
         # if store:
@@ -355,11 +324,13 @@ def mainJSONParser(lines, store=True):
 
 # def mainJSON(path, store=True):
 #     try:
-#         lines = get_file_content(path)
+#         file = open(path, encoding="utf8")
+#         lines = file.readlines()
+#         file.close()
+        
 #         message = Message()
 #         group_schema = Group()
 #         user_schema = User()
-
 
 #         updated_lines = update_message_structure(lines, path, message, group_schema)
 #         if store:
@@ -395,12 +366,8 @@ def mainJSONParser(lines, store=True):
 #     try:
 #         path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
 #         # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
-#         # path = "Whatsapp Chats\WhatsApp Chat with AI Monsoon 22-23.txt"
-#         # path = "Whatsapp Chats\WhatsApp Chat with THE 7 Semester of Sinister 7😨.txt"
-#         # main(path)
+#         # mainJSON(path)
 #         # check_all_files()
-#         abc = get_file_content(path)
-#         print(abc)
 #     except:
 #         print("Error in calling main() function.")
 #         exit(1)

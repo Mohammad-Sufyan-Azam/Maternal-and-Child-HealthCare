@@ -20,8 +20,6 @@ Have checked sending messages from different platforms like whatsapp desktop, wh
 Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?
 
 In the user schema, is the start date in the affiliated groups the date when the user joined the group or the date when the group was created?
-   
-
 
 
 Add the expected end date of a group according to the information provided beforehand by experts. Current structure puts it into NA.
@@ -29,11 +27,14 @@ Is there a need to store system generated messages? If we store them then we can
 Right now the group wise schema segregates messages based on each day having a different list. We can change it to anything.
 For admin status update no system generated message is generated.
 For participants that were added before group creation, no system generated messages are generated.              WE WILL ADD MANUALLY
-For giving pseudo names, ask sir that should we do it or let admin handle that (More privacy in that).           SIR WILL DISCUSS
+For giving pseudo names, ask sir that should we do it or let admin handle that (More privacy in that).           SIR WILL DISCUSS AND LET US KNOW
 Written the entire code in OOPS format with try except statements in each function.
 Are the group names going to be unique? Asking so that we can use group name in the user schema as a key to identify the group.     YES
 Have checked sending messages from different platforms like whatsapp desktop, whatsapp mobile. The system generated messaged do not suffer much change.
 In the user schema, is the start date in the affiliated groups the date when the user joined the group or the date when the group was created?      YES
 VM done. Hugging face models trash, BingAI superior. GET request done, POST request needs to be done. Integration left only. Group wise schema and message structure done.
 Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?      DONE
+
+
 If the tab is present in a new line for more than 2 lines then the JSON parser is not working with the current code.    TO FIX
+If the export file that we get has its name altered or changed then the code will not work.     NOTE

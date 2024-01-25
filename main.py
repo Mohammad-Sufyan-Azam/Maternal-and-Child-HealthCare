@@ -128,12 +128,14 @@ import shutil
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
     content = await file.read()
-    utf8_content = content.decode('utf-8')
-    content = utf8_content.split('\n')
+    content = content.decode('utf-8').split('\n')
+    file_name = file.filename
     # content = [i+'\n' for i in content]
 
     # print(content)
-    parser.mainJSONParser(content)
+    print("File Name: ",file_name)
+    parser.mainJSONParser(content, file_name)
+
     # print(utf8_content)
 
     return {"filename": file.filename}
