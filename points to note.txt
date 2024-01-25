@@ -38,3 +38,4 @@ Ask sir that can he give us a system too since we have less RAM and its laggy wo
 
 If the tab is present in a new line for more than 2 lines then the JSON parser is not working with the current code.    TO FIX
 If the export file that we get has its name altered or changed then the code will not work.     NOTE
+Can the group name be changed? If yes, then we need to change the group name in the parser too.     NOTE

@@ -17,6 +17,23 @@ client = MongoClient("mongodb://localhost:27017/")
 database = client.students
 collection = database.get_collection("whatsapp1")
 
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080"
+    ]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -70,10 +87,10 @@ async def fetchGroupInfo(group_name):
     return None
 
 async def updateGroupMessage(group_name:str,new_messages):
-    print(group_name,new_messages)
+    # print(group_name,new_messages)
     newGroupInformation = new_messages
     data =  await fetchGroupInfo(group_name)
-    print(data)
+    
     if data!= None:
         # adding new messages to content and updating it in database
         if "content" in newGroupInformation:
@@ -95,6 +112,7 @@ async def updateGroupMessage(group_name:str,new_messages):
         
         # change in group members
         if "members" in newGroupInformation:
+            print(data['members'])
             newGroupMembers = newGroupInformation["members"]
             for member in newGroupMembers:
                 data["members"][member] = newGroupInformation["members"][member]
