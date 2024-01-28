@@ -36,6 +36,7 @@ const UploadLayout = () => {
       // Send the file to the FastAPI backend
       const response = await fetch('http://localhost:8000/uploadfile', {
         method: 'POST',
+        mode: 'no-cors',
         body: formData,
       });
 
