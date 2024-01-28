@@ -45,3 +45,7 @@ Tested the backend integration process with these points-
 2. The content of each single message is being stored according to its timestamp, i.e., different exports having messages of the same day will be stored in the same day in db.
 3. The message structure is perfectly able to distinguish between system generated messages and user generated messages.
 4. Verified the content update process with taking multiple messages in the same timestamp but different exports. Does not work.    TO FIX
+
+Need to accomodate our backend code for the following case -
+12:32 - Hey
+12:31 - Hello                                                       TO FIX
