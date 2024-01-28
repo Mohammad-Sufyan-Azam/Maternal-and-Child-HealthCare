@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import json
 from typing import Optional,List
 from click import File
@@ -54,8 +55,6 @@ class updateGroupMessages(BaseModel):
     content : Optional[dict] = None 
 
 
-
-
 # GET REQUESTS
 @app.get("/")
 async def root():
@@ -78,6 +77,18 @@ def fetchGroupNames():
     print(type(groupNames))
     return groupNames
 
+def compareTimeStamps(timestamp1_str,timestamp2_str):
+    timestamp_format = "%m/%d/%y, %I:%M %p"
+    timestamp1 = datetime.strptime(timestamp1_str, timestamp_format)
+    timestamp2 = datetime.strptime(timestamp2_str, timestamp_format)
+
+    if timestamp1 < timestamp2:
+        return -1
+    elif timestamp1 > timestamp2:
+        return 1
+    else:
+        return 0
+
 # Retrieve Group Inforamtion
 @app.post("/GroupInfo/")
 async def fetchGroupInfo(group_name):
@@ -94,11 +105,40 @@ async def updateGroupMessage(group_name:str,new_messages):
     if data!= None:
         # adding new messages to content and updating it in database
         if "content" in newGroupInformation:
-            for key in newGroupInformation["content"]:
-                if key in data["content"]:
-                    data["content"][key].extend(newGroupInformation["content"][key])
-                else:
-                    data["content"][key] = newGroupInformation["content"][key]
+            for date in newGroupInformation["content"]:
+                if date in data["content"]:
+                    # if timestamp same i.e new walle ka naaya and old walle ka last toh id update krni h
+
+                    oldTimestamps = data["content"][date] # [{},{},..........]
+                    newTimestamps = newGroupInformation["content"][date] # [{},{},..........]
+
+                    # if compareTimeStamps(newTimestamps[0]["timestamp"],oldTimestamps[-1]["timestamp"]) > 0:
+
+                    newTimestamps_start = newTimestamps[0]["timestamp"]
+                    oldTimestamps_end = data["content"][date][-1]["timestamp"]
+              
+                    # Note one case is not considered 
+                    indicator = compareTimeStamps(newTimestamps_start,oldTimestamps_end)
+                    print(indicator)
+                    if indicator > 0: # matlab aage ke messages ke purane messages se so
+                        data["content"][date].extend(newGroupInformation["content"][date])
+                    
+                    elif indicator < 0: # matlab new messages main purane messages repeated [1,2,3,4,4,5] [2,3,4,4,5,| 5,6]
+                        pass
+                    else: # [1,2,3,4] [4,4,4,5,6,7] 
+                        offset = int(data["content"][date][-1]["message_id"][-1]) + 1
+                        for msg in newTimestamps:
+                            if msg["timestamp"] == oldTimestamps_end:
+                                msg["message_id"] = msg["message_id"][:-1] + str(offset)
+                                offset+=1
+                            else:
+                                break
+                        data["content"][date].extend(newGroupInformation["content"][date])
+                        
+                else: # no messages iss date ki in purana database
+                    data["content"][date] = newGroupInformation["content"][date]
+                    
+
                     
             update_data = collection.find_one_and_update(
                     {"group_name": group_name},
