@@ -38,3 +38,10 @@ Ask sir that can he give us a system too since we have less RAM and its laggy wo
 
 If the tab is present in a new line for more than 2 lines then the JSON parser is not working with the current code.    TO FIX
 If the export file that we get has its name altered or changed then the code will not work.     NOTE
+Can the group name be changed? If yes, then we need to change the group name in the parser too.     NOTE
+
+Tested the backend integration process with these points-
+1. The group members dictionary update is working fine.
+2. The content of each single message is being stored according to its timestamp, i.e., different exports having messages of the same day will be stored in the same day in db.
+3. The message structure is perfectly able to distinguish between system generated messages and user generated messages.
+4. Verified the content update process with taking multiple messages in the same timestamp but different exports. Does not work.    TO FIX
