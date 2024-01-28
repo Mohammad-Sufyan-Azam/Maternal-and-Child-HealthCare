@@ -11,7 +11,7 @@ const HomeLayout = () => {
 
       {/* Main content area */}
       <main className="main-content">
-        <h1 className='topHeading'>Dashboard</h1>
+        <h1 className='topHeading'>Maternal and Childcare Health Analysis</h1>
 
         {/* Dashboard sections */}
         <section className="dashboard-section">
@@ -21,13 +21,13 @@ const HomeLayout = () => {
         </section>
 
         <section className="dashboard-section">
-          <h2>Analytics</h2>
+          <h2>WhatsApp Analysis</h2>
           {/* Placeholder content */}
           <p>Here you can display analytics charts and graphs.</p>
         </section>
 
         <section className="dashboard-section">
-          <h2>Settings</h2>
+          <h2>Zoom Analysis</h2>
           {/* Placeholder content */}
           <p>Configure settings for your dashboard here.</p>
         </section>

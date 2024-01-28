@@ -11,7 +11,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<HomeLayout/>} />
-        <Route path="/upload" element={<UploadLayout/>} />
+        <Route path="/Upload" element={<UploadLayout/>} />
         {/* Add more routes for other pages if needed */}
       </Routes>
     </Router>

@@ -9,22 +9,22 @@ const Sidebar = () => {
         <h2>Logo</h2>
       </div>
       <nav className="nav">
-        <ul>
-          <li className='sideList'>
-            <span className='sideOptionActive'>Home</span>
+        <ul className='sideList'>
+          <li>
+            <Link className='sideOptionActive'>Home</Link>
           </li>
           <li>
-            <span className='sideOption'>Analytics</span>
+            <Link className='sideOption' to="/whatsApp-Analysis">WhatsApp Analysis</Link>
           </li>
           <li>
-            <span className='sideOption'>Settings</span>
+            <Link className='sideOption' to="/zoom-Analysis">Zoom Analysis</Link>
           </li>
           <li>
-            <Link className='sideOption' to="/upload">Upload</Link>
+            <Link className='sideOption' to="/Upload">Upload</Link>
           </li>
         </ul>
-        <Outlet />
       </nav>
+      <Outlet />
     </aside>
   );
 };

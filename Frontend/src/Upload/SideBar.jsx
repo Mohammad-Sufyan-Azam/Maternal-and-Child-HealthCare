@@ -10,22 +10,22 @@ const Sidebar = () => {
         <h2>Logo</h2>
       </div>
       <nav className="nav">
-        <ul>
-          <li className='sideList'>
+        <ul className='sideList'>
+          <li>
             <Link className='sideOption' to="/">Home</Link>
           </li>
           <li>
-            <span className='sideOption'>Analytics</span>
+            <Link className='sideOption' to='/whatsApp-Analysis'>WhatsApp Analysis</Link>
           </li>
           <li>
-            <span className='sideOption'>Settings</span>
+            <Link className='sideOption' to='/zoom-Analysis'>Zoom Analysis</Link>
           </li>
           <li>
-            <span className='sideOptionActive'>Upload</span>
+            <Link className='sideOptionActive'>Upload</Link>
           </li>
-          <Outlet />
         </ul>
       </nav>
+      <Outlet />
     </aside>
   );
 };
