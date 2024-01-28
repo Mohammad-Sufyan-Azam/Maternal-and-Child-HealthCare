@@ -22,8 +22,8 @@ from fastapi.middleware.cors import CORSMiddleware
 origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080"
+    "https://127.0.0.1",
+    "https://127.0.0.1:8080"
     ]
 
 app.add_middleware(
@@ -94,14 +94,24 @@ async def updateGroupMessage(group_name:str,new_messages):
     if data!= None:
         # adding new messages to content and updating it in database
         if "content" in newGroupInformation:
-            data["content"].update(newGroupInformation["content"])
+            for key in newGroupInformation["content"]:
+                if key in data["content"]:
+                    data["content"][key].extend(newGroupInformation["content"][key])
+                else:
+                    data["content"][key] = newGroupInformation["content"][key]
+                    
             update_data = collection.find_one_and_update(
                     {"group_name": group_name},
                     {"$set": {"content" : data["content"]}}
                 )
+            
+            # last date - if new file contains start date >= last date then update
+            # if last date = start date : data[][last_date].append(messages of first)
+            # then update all others after removing 
+
         # print(data['content'])
 
-        # if End Date is provided update it
+        # if End Date is provided update itAccess-Control-Allow-Origin:*
         if "end_date" in newGroupInformation:
             if newGroupInformation["end_date"] != "NA":
                 data["end_date"] = newGroupInformation["end_date"]
@@ -151,8 +161,48 @@ async def create_upload_file(file: UploadFile):
 
 
 
+# @app.put("/uploadfile/")
+# async def updateGroupMessage(group_name:str,new_messages):
+    
+#     # print(group_name,new_messages)
+#     newGroupInformation = new_messages
+#     data =  await fetchGroupInfo(group_name)
+    
+#     if data!= None:
+#         # adding new messages to content and updating it in database
+#         if "content" in newGroupInformation:
+#             data["content"].update(newGroupInformation["content"])
+#             update_data = collection.find_one_and_update(
+#                     {"group_name": group_name},
+#                     {"$set": {"content" : data["content"]}}
+#                 )
+#         # print(data['content'])
 
+#         # if End Date is provided update it
+#         if "end_date" in newGroupInformation:
+#             if newGroupInformation["end_date"] != "NA":
+#                 data["end_date"] = newGroupInformation["end_date"]
+#                 update_data = collection.find_one_and_update(
+#                     {"group_name": group_name},
+#                     {"$set": {"end_date" : data["end_date"]}}
+#                 )
+        
+#         # change in group members
+#         if "members" in newGroupInformation:
+#             print(data['members'])
+#             newGroupMembers = newGroupInformation["members"]
+#             for member in newGroupMembers:
+#                 data["members"][member] = newGroupInformation["members"][member]
 
+#             update_data = collection.find_one_and_update(
+#                     {"group_name": group_name},
+#                     {"$set": {"members" : data["members"]}}
+#             )
+            
+#         return "Message updated to the database"
+    
+#     else:
+#         return "Data is NULL"
 
 
 
