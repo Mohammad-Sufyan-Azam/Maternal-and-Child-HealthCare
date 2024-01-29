@@ -109,31 +109,31 @@ async def updateGroupMessage(group_name:str,new_messages):
                 if date in data["content"]:
                     # if timestamp same i.e new walle ka naaya and old walle ka last toh id update krni h
 
-                    oldTimestamps = data["content"][date] # [{},{},..........]
-                    newTimestamps = newGroupInformation["content"][date] # [{},{},..........]
+                    # oldTimestamps = data["content"][date] # [{},{},..........]
+                    # newTimestamps = newGroupInformation["content"][date] # [{},{},..........]
 
-                    # if compareTimeStamps(newTimestamps[0]["timestamp"],oldTimestamps[-1]["timestamp"]) > 0:
+                    # # if compareTimeStamps(newTimestamps[0]["timestamp"],oldTimestamps[-1]["timestamp"]) > 0:
 
-                    newTimestamps_start = newTimestamps[0]["timestamp"]
-                    oldTimestamps_end = data["content"][date][-1]["timestamp"]
+                    # newTimestamps_start = newTimestamps[0]["timestamp"]
+                    # oldTimestamps_end = data["content"][date][-1]["timestamp"]
               
-                    # Note one case is not considered 
-                    indicator = compareTimeStamps(newTimestamps_start,oldTimestamps_end)
-                    print(indicator)
-                    if indicator > 0: # matlab aage ke messages ke purane messages se so
-                        data["content"][date].extend(newGroupInformation["content"][date])
+                    # # Note one case is not considered 
+                    # indicator = compareTimeStamps(newTimestamps_start,oldTimestamps_end)
+                    # print(indicator)
+                    # if indicator > 0: # matlab aage ke messages ke purane messages se so
+                    #     data["content"][date].extend(newGroupInformation["content"][date])
                     
-                    elif indicator < 0: # matlab new messages main purane messages repeated [1,2,3,4,4,5] [2,3,4,4,5,| 5,6]
-                        pass
-                    else: # [1,2,3,4] [4,4,4,5,6,7] 
-                        offset = int(data["content"][date][-1]["message_id"][-1]) + 1
-                        for msg in newTimestamps:
-                            if msg["timestamp"] == oldTimestamps_end:
-                                msg["message_id"] = msg["message_id"][:-1] + str(offset)
-                                offset+=1
-                            else:
-                                break
-                        data["content"][date].extend(newGroupInformation["content"][date])
+                    # elif indicator < 0: # matlab new messages main purane messages repeated [1,2,3,4,4,5] [2,3,4,4,5,| 5,6]
+                    #     pass
+                    # else: # [1,2,3,4] [4,4,4,5,6,7] 
+                    #     offset = int(data["content"][date][-1]["message_id"][-1]) + 1
+                    #     for msg in newTimestamps:
+                    #         if msg["timestamp"] == oldTimestamps_end:
+                    #             msg["message_id"] = msg["message_id"][:-1] + str(offset)
+                    #             offset+=1
+                    #         else:
+                    #             break
+                    data["content"][date].extend(newGroupInformation["content"][date])
                         
                 else: # no messages iss date ki in purana database
                     data["content"][date] = newGroupInformation["content"][date]

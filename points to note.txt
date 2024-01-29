@@ -49,3 +49,5 @@ Tested the backend integration process with these points-
 Need to accomodate our backend code for the following case -
 12:32 - Hey
 12:31 - Hello                                                       TO FIX
+
+Convert the 12 hour format timestamp into 24 hour format timestamp in parser.           TO FIX

@@ -12,6 +12,7 @@ const UploadLayout = () => {
 
   const handleFileChange = (event) => {
     // Set the selected file when the user chooses a file
+    console.log('File selected:', event.target.files[0].name);
     setSelectedFile(event.target.files[0]);
   };
 
