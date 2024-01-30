@@ -51,3 +51,5 @@ Need to accomodate our backend code for the following case -
 12:31 - Hello                                                       TO FIX
 
 Convert the 12 hour format timestamp into 24 hour format timestamp in parser.           TO FIX
+Ask sir that can he give us a system too since we have less RAM and its laggy working on VM in VM?      TO FIX
+Ask sir that will the zoom meeting be unique for each group? If yes, then we can use it as a key to identify the group.     TO FIX
