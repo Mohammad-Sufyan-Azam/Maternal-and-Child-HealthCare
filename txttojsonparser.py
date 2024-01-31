@@ -115,8 +115,22 @@ class Group:
 
     def get_group_admins(self, lines):
         try:
-            admins = []
+            admins = {}
             # Admins information not present in any system generated messages
+            for line in lines:
+                message = line["message"]
+                if "added" in message:
+                    name = message.split(' added ')[0].strip()
+                    if 'You' in name:
+                        admins['You'] = True
+                    else:
+                        admins[name] = True
+                elif "removed" in message:
+                    name = message.split(' removed ')[0].strip()
+                    if 'You' in name:
+                        admins['You'] = True
+                    else:
+                        admins[name] = True
             return admins
         except:
             print("Error in getting group admins.")
@@ -129,19 +143,63 @@ class Group:
             # Case 2 Removed herself/himself - 'Ishit (CSAM) left'
             # Case 3 Added by admin - 'You added Ishit (CSAM)'
             # Case 4 Initially the group was created with these members - No system generated messages
+            # Case 5 Neha Singh added Sid, Kal, Tuk and Roe
             members = {}
-            # TODO: Assumption: name does not contain 'removed', 'left', or 'added' in it
+            # Assumption: name does not contain 'removed', 'left', or 'added' in it
+            # Assumption: admin names will also be there in group members
             for line in lines:
                 message = line["message"]
+
                 if "removed" in message:
                     name = message.split(' removed ')[1].strip()
-                    members[name] = False
-                elif "left" in message:
-                    name = message.split(' left')[0].strip()
-                    members[name] = False
+                    if ',' in name:         # multiple names > 2
+                        names = name.split(', ')
+                        for n in names:
+                            if 'and' not in n:
+                                if 'You' not in n.capitalize():
+                                    members[n] = False
+                            else:
+                                n = n.split(' and ')
+                                if 'You' not in n[0].capitalize():
+                                    members[n[0]] = False
+                                if 'You' not in n[1].capitalize():
+                                    members[n[1]] = False
+                    elif 'and' in name:     # multiple names = 2
+                        n = name.split(' and ')
+                        if 'You' not in n[0].capitalize():
+                            members[n[0]] = False
+                        if 'You' not in n[1].capitalize():
+                            members[n[1]] = False
+                    else:                   # single name = 1
+                        if 'You' not in name:
+                            members[name] = False
+
                 elif "added" in message:
                     name = message.split(' added ')[1].strip()
-                    members[name] = True
+                    if ',' in name:
+                        names = name.split(', ')
+                        for n in names:
+                            if 'and' not in n:
+                                if 'You' not in n.capitalize():
+                                    members[n] = True
+                            else:
+                                n = n.split(' and ')
+
+                                members[n[0]] = True
+                                members[n[1]] = True
+                    elif 'and' in name:
+                        n = name.split(' and ')
+                        members[n[0]] = True
+                        members[n[1]] = True
+                    else:
+                        if 'You' not in name.capitalize():
+                            members[name] = True
+                
+                elif "left" in message:
+                    name = message.split(' left')[0].strip()
+                    if 'You' not in name.capitalize():
+                        members[name] = False
+
             return members
         except:
             print("Error in getting members.")
@@ -322,55 +380,55 @@ def mainJSONParser(content, file_name, store=True):
         exit(1)
 
 
-# def mainJSON(path, store=True):
-#     try:
-#         file = open(path, encoding="utf8")
-#         lines = file.readlines()
-#         file.close()
+def mainJSON(path, store=True):
+    try:
+        file = open(path, encoding="utf8")
+        lines = file.readlines()
+        file.close()
         
-#         message = Message()
-#         group_schema = Group()
-#         user_schema = User()
+        message = Message()
+        group_schema = Group()
+        user_schema = User()
 
-#         updated_lines = update_message_structure(lines, path, message, group_schema)
-#         if store:
-#             store_json(updated_lines, "message_structure_1.json")
-#         system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
+        updated_lines = update_message_structure(lines, path, message, group_schema)
+        if store:
+            store_json(updated_lines, "message_structure_3.json")
+        system_messages, user_messages = message.get_user_and_system_messages(updated_lines)
 
-#         group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
-#         if store:
-#             store_json(group_json, "group wise schema_1.json")
+        group_json = group_schema.update_group_structure(path, system_messages, updated_lines)
+        if store:
+            store_json(group_json, "group wise schema_3.json")
 
-#         # user_json = update_user_structure(path, user_messages, user_schema)
-#         # print(user_json)
-#         # if store:
-#         #     store_json(user_json, "user wise schema.json")
+        # user_json = update_user_structure(path, user_messages, user_schema)
+        # print(user_json)
+        # if store:
+        #     store_json(user_json, "user wise schema.json")
         
-#         # push_to_mongo(group_json)
-#     except:
-#         print("Error in converting the data to json (main() function).")
-#         exit(1)
+        # push_to_mongo(group_json)
+    except:
+        print("Error in converting the data to json (main() function).")
+        exit(1)
 
 
-# def check_all_files():
-#     dir = "Whatsapp Chats"
-#     files = os.listdir(dir)
-#     for file in files:
-#         path = "Whatsapp Chats/" + file
-#         mainJSON(path)
+def check_all_files():
+    dir = "Whatsapp Chats"
+    files = os.listdir(dir)
+    for file in files:
+        path = "Whatsapp Chats/" + file
+        mainJSON(path)
     
-#     return True
+    return True
 
 
-# if __name__ == "__main__":
-#     try:
-#         path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
-#         # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
-#         # mainJSON(path)
-#         # check_all_files()
-#     except:
-#         print("Error in calling main() function.")
-#         exit(1)
+if __name__ == "__main__":
+    try:
+        path = "Whatsapp Chats\WhatsApp Chat with (SUPPORT PREGNANACY) 4.txt"
+        # path = "Whatsapp Chats\WhatsApp Chat with Test Group.txt"
+        mainJSON(path, store=True)
+        # check_all_files()
+    except:
+        print("Error in calling main() function.")
+        exit(1)
 
 
 
