@@ -14,7 +14,7 @@ def txt_to_chat(txt_file):
         timestamp_str, sender, message = parts[0], parts[1], parts[2]
 
         # Parse timestamp
-        timestamp = datetime.strptime(timestamp_str, '%H:%M:%S').strftime('%I:%M %p')
+        timestamp = datetime.strptime(timestamp_str, '%H:%M:%S').strftime('%H:%M:%S')
 
         if current_entry['timestamp'] is None:
             current_entry['timestamp'] = timestamp
@@ -32,11 +32,30 @@ def txt_to_chat(txt_file):
 
     # Convert to the desired format
     formatted_chat = []
+    sendersList = []
+    timestampsList = {}
+    messagesList = {}
+
+
     for entry in chat:
+        # print(entry)
+        if entry['sender'] not in sendersList:
+            sendersList.append(entry['sender'])
+            timestampsList[entry['sender']] = []
+            messagesList[entry['sender']] = []
+            timestampsList[entry['sender']].append(entry['timestamp'])
+            messagesList[entry['sender']].append(entry['message'])
+
+        else:
+            timestampsList[entry['sender']].append(entry['timestamp'])
+            messagesList[entry['sender']].append(entry['message'])
+    
+
+    for sender in set(sendersList):
         formatted_entry = {
-            'timestamp': entry['timestamp'],
-            'sender': entry['sender'],
-            'message': entry['message'],
+            'timestamp': timestampsList[sender],
+            'sender': sender,
+            'message': messagesList[sender],
             'tags': ['moderator/user']
         }
         formatted_chat.append(formatted_entry)
