@@ -29,7 +29,7 @@ def csv_to_attendance_pandas(csv_file):
     nonGuest = []
     admins = []
     for i in range(len(participants)):
-        attendance_dict[participants[i]] = duration[i]
+        attendance_dict[participants[i]] = duration[i]  + " min"
         if isGuest[i] != 'Yes':
             nonGuest.append(i)
             admins.append(participants[i])

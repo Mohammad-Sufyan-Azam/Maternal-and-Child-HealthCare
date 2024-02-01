@@ -37,7 +37,7 @@ def txt_to_chat(txt_file):
             'timestamp': entry['timestamp'],
             'sender': entry['sender'],
             'message': entry['message'],
-            'tags': ['moderator/user', 'question/answer']
+            'tags': ['moderator/user']
         }
         formatted_chat.append(formatted_entry)
 
