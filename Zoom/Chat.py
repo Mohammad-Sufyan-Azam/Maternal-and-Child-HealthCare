@@ -20,12 +20,12 @@ def txt_to_chat(txt_file):
             current_entry['timestamp'] = timestamp
             current_entry['sender'] = sender[:len(sender)-1]
             current_entry['message'].append(message)
-        elif current_entry['timestamp'] == timestamp and current_entry['sender'] == sender:
+        elif current_entry['timestamp'] == timestamp and current_entry['sender'] == sender[:len(sender)-1]:
             current_entry['message'].append(message)
         else:
             chat.append(current_entry.copy())
             current_entry['timestamp'] = timestamp
-            current_entry['sender'] = sender
+            current_entry['sender'] = sender[:len(sender)-1]
             current_entry['message'] = [message]
 
     chat.append(current_entry)
