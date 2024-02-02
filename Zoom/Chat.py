@@ -18,7 +18,7 @@ def txt_to_chat(txt_file):
 
         if current_entry['timestamp'] is None:
             current_entry['timestamp'] = timestamp
-            current_entry['sender'] = sender
+            current_entry['sender'] = sender[:len(sender)-1]
             current_entry['message'].append(message)
         elif current_entry['timestamp'] == timestamp and current_entry['sender'] == sender:
             current_entry['message'].append(message)
@@ -48,7 +48,7 @@ def txt_to_chat(txt_file):
 
         else:
             timestampsList[entry['sender']].append(entry['timestamp'])
-            messagesList[entry['sender']].append(entry['message'])
+            messagesList[entry['sender']].append(entry['message'][0])
     
 
     for sender in set(sendersList):
