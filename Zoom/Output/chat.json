@@ -1,13 +1,11 @@
 [
     {
         "timestamp": [
-            "01:12:08"
+            "01:11:13"
         ],
-        "sender": "Aradhya Neeraj Mathur",
+        "sender": "Naveenaâ€™s iPhone",
         "message": [
-            [
-                "Great talk !"
-            ]
+            "Amazing talk Anupriya!!"
         ],
         "tags": [
             "moderator/user"
@@ -15,13 +13,47 @@
     },
     {
         "timestamp": [
-            "01:27:17"
+            "01:11:29"
         ],
-        "sender": "gautamitripathi",
+        "sender": "Sastha S",
         "message": [
-            [
-                "Great Talk AT"
-            ]
+            "Great talk AT!"
+        ],
+        "tags": [
+            "moderator/user"
+        ]
+    },
+    {
+        "timestamp": [
+            "01:11:55"
+        ],
+        "sender": "Jasmeet Kaur (she/her)",
+        "message": [
+            "Wonderful talk, Anupriya!"
+        ],
+        "tags": [
+            "moderator/user"
+        ]
+    },
+    {
+        "timestamp": [
+            "01:12:08"
+        ],
+        "sender": "Aradhya Neeraj Mathur",
+        "message": [
+            "Great talk !"
+        ],
+        "tags": [
+            "moderator/user"
+        ]
+    },
+    {
+        "timestamp": [
+            "01:12:15"
+        ],
+        "sender": "Neha Kumar",
+        "message": [
+            "If anyone has any questions please raise your hand, or drop a question here in chat."
         ],
         "tags": [
             "moderator/user"
@@ -34,24 +66,8 @@
         ],
         "sender": "Khushboo Chitre",
         "message": [
-            [
-                "Nice talk! What, in your view, is the single best practice a designer can follow before designing a menstrual education app?"
-            ],
-            "Thank you!"
-        ],
-        "tags": [
-            "moderator/user"
-        ]
-    },
-    {
-        "timestamp": [
-            "01:11:13"
-        ],
-        "sender": "Naveenaâ€™s iPhone",
-        "message": [
-            [
-                "Amazing talk Anupriya!!"
-            ]
+            "Nice talk! What, in your view, is the single best practice a designer can follow before designing a menstrual education app?",
+            "T"
         ],
         "tags": [
             "moderator/user"
@@ -63,9 +79,7 @@
         ],
         "sender": "Sachin R Pendse",
         "message": [
-            [
-                "Great talk Anupriya!!"
-            ]
+            "Great talk Anupriya!!"
         ],
         "tags": [
             "moderator/user"
@@ -73,41 +87,11 @@
     },
     {
         "timestamp": [
-            "01:12:15"
+            "01:27:17"
         ],
-        "sender": "Neha Kumar",
+        "sender": "gautamitripathi",
         "message": [
-            [
-                "If anyone has any questions please raise your hand, or drop a question here in chat."
-            ]
-        ],
-        "tags": [
-            "moderator/user"
-        ]
-    },
-    {
-        "timestamp": [
-            "01:11:55"
-        ],
-        "sender": "Jasmeet Kaur (she/her)",
-        "message": [
-            [
-                "Wonderful talk, Anupriya!"
-            ]
-        ],
-        "tags": [
-            "moderator/user"
-        ]
-    },
-    {
-        "timestamp": [
-            "01:11:29"
-        ],
-        "sender": "Sastha S",
-        "message": [
-            [
-                "Great talk AT!"
-            ]
+            "Great Talk AT"
         ],
         "tags": [
             "moderator/user"

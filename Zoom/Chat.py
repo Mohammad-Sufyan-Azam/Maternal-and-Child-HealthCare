@@ -7,7 +7,7 @@ def txt_to_chat(txt_file):
     with open(txt_file, 'r') as file:
         lines = file.readlines()
 
-    current_entry = {'timestamp': None, 'sender': None, 'message': [], 'tags': []}
+    current_entry = {'timestamp': None, 'sender': None, 'message': None, 'tags': []}
 
     for line in lines:
         parts = line.strip().split('\t')
@@ -19,14 +19,14 @@ def txt_to_chat(txt_file):
         if current_entry['timestamp'] is None:
             current_entry['timestamp'] = timestamp
             current_entry['sender'] = sender[:len(sender)-1]
-            current_entry['message'].append(message)
+            current_entry['message'] = message
         elif current_entry['timestamp'] == timestamp and current_entry['sender'] == sender[:len(sender)-1]:
             current_entry['message'].append(message)
         else:
             chat.append(current_entry.copy())
             current_entry['timestamp'] = timestamp
             current_entry['sender'] = sender[:len(sender)-1]
-            current_entry['message'] = [message]
+            current_entry['message'] = message
 
     chat.append(current_entry)
 
@@ -59,6 +59,9 @@ def txt_to_chat(txt_file):
             'tags': ['moderator/user']
         }
         formatted_chat.append(formatted_entry)
+
+    #sort the formatted_chat by timestamp
+    formatted_chat.sort(key=lambda x: x['timestamp'][0])
 
     return formatted_chat
 
