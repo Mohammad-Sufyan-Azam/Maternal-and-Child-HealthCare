@@ -4,7 +4,7 @@ from datetime import datetime
 def txt_to_chat(txt_file):
     chat = []
 
-    with open(txt_file, 'r') as file:
+    with open(txt_file, 'r',encoding='utf-8') as file:
         lines = file.readlines()
 
     current_entry = {'timestamp': None, 'sender': None, 'message': None, 'tags': []}
@@ -48,7 +48,7 @@ def txt_to_chat(txt_file):
 
         else:
             timestampsList[entry['sender']].append(entry['timestamp'])
-            messagesList[entry['sender']].append(entry['message'][0])
+            messagesList[entry['sender']].append(entry['message'])
     
 
     for sender in set(sendersList):

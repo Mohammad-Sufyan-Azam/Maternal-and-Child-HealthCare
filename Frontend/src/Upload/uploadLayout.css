@@ -3,7 +3,6 @@
   position: relative;
   align-items: center;
   justify-content: center;
-  margin-top: 40px;
   bottom: 500px;
 }
 
@@ -17,7 +16,8 @@
     font-size: 16px;
     cursor: pointer;
     margin-top: 120px;
-    position: fixed;
+    position: relative;
+    right: 380px;
 
 }
 
@@ -28,26 +28,32 @@ label {
   font-family: sans-serif;
   border-radius: 0.3rem;
   cursor: pointer;
-  position: fixed;
-  left: 500px;
+  position: relative;
+  right: 220px;
+  /* margin-right: 350px; */
 }
 
-.uploadText{
-  margin-left: 300px;
-  margin-right: 50px;
-  position: fixed;
-  top: 173px;
-  text-overflow: ellipsis;
-  outline-style: dotted;
-  
-}
 
-.uploadHeading{
+.uploadHeading1{
   display: flex;
-  margin-right: 420px;
-  position: fixed;
-  top: 100px;
+  position: relative;
+  margin-bottom: 200px;
+  margin-right: 80px;
   text-overflow: ellipsis;
   align-items: left;
+}
+
+.uploadHeading2{
+  display: flex; 
+  position: relative;
+  margin-bottom: 200px;
+  margin-right: 80px;
+  text-overflow: ellipsis;
+  align-items: left;
+}
+
+.textLabel{
+  position: relative;
+  right: 200px;
 }
 

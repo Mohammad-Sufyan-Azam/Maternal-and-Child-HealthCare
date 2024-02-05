@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 def vtt_to_transcript(vtt_file):
 
     transcript = []
-    with open(vtt_file, 'r') as file:
+    with open(vtt_file, 'r',encoding='utf-8') as file:
         lines = file.readlines()
         # print(lines)
     index = 0

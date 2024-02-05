@@ -53,16 +53,49 @@ const UploadLayout = () => {
       {/* Input for file upload */}
       <Sidebar/>
       <div className='uploadSection'>
-      <h1 className='uploadHeading'>Upload Whatsapp Chat Data</h1>
+      <h1 className='uploadHeading1'>Upload Whatsapp Chat Data</h1>
+      <div>
       <input type="file" id="actual-btn" onChange={handleFileChange} hidden/>
       <label for="actual-btn">Choose File</label>
       {!selectedFile ? 
-      <TextField defaultValue='No file chosen' type='text'/> :
-      <TextField value={selectedFile.name} type='text'/>}
-      {/* <span className='uploadText' id="file-chosen">{selectedFile ? selectedFile.name : 'No file chosen'}</span> */}
-      {/* Submit button */}
+      <TextField defaultValue='No file chosen' type='text' UNSAFE_className='textLabel'/> :
+      <TextField value={selectedFile.name} type='text' UNSAFE_className='textLabel'/>}
+      </div>
       <button className='submitButton' onClick={handleFileUpload}>Submit</button>
-      </div>    
+      </div>
+      <div className='uploadSection'>
+      <h1 className='uploadHeading2'>Upload Whatsapp Chat Data</h1>
+      <div>
+      <input type="file" id="actual-btn" onChange={handleFileChange} hidden/>
+      <label for="actual-btn">Choose File</label>
+      {!selectedFile ? 
+      <TextField defaultValue='No file chosen' type='text' UNSAFE_className='textLabel'/> :
+      <TextField value={selectedFile.name} type='text' UNSAFE_className='textLabel'/>}
+      </div>
+      <button className='submitButton' onClick={handleFileUpload}>Submit</button>
+      </div>
+      <div className='uploadSection'>
+      <h1 className='uploadHeading2'>Upload Whatsapp Chat Data</h1>
+      <div>
+      <input type="file" id="actual-btn" onChange={handleFileChange} hidden/>
+      <label for="actual-btn">Choose File</label>
+      {!selectedFile ? 
+      <TextField defaultValue='No file chosen' type='text' UNSAFE_className='textLabel'/> :
+      <TextField value={selectedFile.name} type='text' UNSAFE_className='textLabel'/>}
+      </div>
+      <button className='submitButton' onClick={handleFileUpload}>Submit</button>
+      </div> 
+      <div className='uploadSection'>
+      <h1 className='uploadHeading2'>Upload Whatsapp Chat Data</h1>
+      <div>
+      <input type="file" id="actual-btn" onChange={handleFileChange} hidden/>
+      <label for="actual-btn">Choose File</label>
+      {!selectedFile ? 
+      <TextField defaultValue='No file chosen' type='text' UNSAFE_className='textLabel'/> :
+      <TextField value={selectedFile.name} type='text' UNSAFE_className='textLabel'/>}
+      </div>
+      <button className='submitButton' onClick={handleFileUpload}>Submit</button>
+      </div> 
       </>
   );
 };
