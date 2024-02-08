@@ -1,76 +1,107 @@
-import re
 from datetime import datetime, timedelta
-
-
-def vtt_to_transcript(vtt_file):
-
-    transcript = []
-    with open(vtt_file, 'r',encoding='utf-8') as file:
-        lines = file.readlines()
-        # print(lines)
-    index = 0
-    while index < len(lines):
-        line = lines[index].strip()
-        # Check if it's a timestamp line
-        if re.match(r'\d{2}:\d{2}:\d{2}\.\d{3} --> \d{2}:\d{2}:\d{2}\.\d{3}', line):
-            start_time, end_time = line.split(' --> ')
-            # print(start_time, end_time)
-            start_time = datetime.strptime(start_time, '%H:%M:%S.%f')
-            end_time = datetime.strptime(end_time, '%H:%M:%S.%f')
-
-            # Round off to the nearest second
-            rounded_time_start = start_time + timedelta(seconds=0.5)
-            rounded_time_end = end_time + timedelta(seconds=0.5)
-
-            # Extract hours, minutes, and seconds
-            start_hours = rounded_time_start.hour
-            start_minutes = rounded_time_start.minute
-            start_seconds = rounded_time_start.second
-            start_24_time = f"{start_hours:02d}:{start_minutes:02d}:{start_seconds:02d}"
-
-            # Extract hours, minutes, and seconds
-            end_hours = rounded_time_end.hour
-            end_minutes = rounded_time_end.minute
-            end_seconds = rounded_time_end.second
-            end_24_time = f"{end_hours:02d}:{end_minutes:02d}:{end_seconds:02d}"
-
-            # Parse speaker and message
-            speaker_line = lines[index + 1].strip()
-            if ':' not in speaker_line:
-                message = speaker_line
-            else:
-                sender, message = speaker_line.split(': ', 1)
-
-            # Parse tags (if any)
-            tags = re.findall(r'\[\"(.*?)\"\]', message)
-            # message = re.sub(r'\[.*?\]', '', message).strip()
-
-            # Create dictionary and append to transcript
-            entry = {
-                'start_time': start_24_time,
-                'end_time': end_24_time,
-                'sender': sender,
-                'message': message,
-                'tags': tags
-            }
-            transcript.append(entry)
-
-            # Move to the next entry
-            index += 2
-        else:
-            index += 1
-
-    return transcript
-
-
-
-
-# Example usage:
-vtt_file_path = "Zoom/Data/thesis.vtt"
-transcript_data = vtt_to_transcript(vtt_file_path)
-# print(transcript_data)
-
 import json
-file = open("Zoom/Output/transcript.json", "w", encoding='utf-8')
-file.write(json.dumps(transcript_data, ensure_ascii=False, indent=4))
-file.close()
+
+def ModifyFile(path):
+    file = open(path, encoding="utf8")
+    lines = file.readlines()
+    file.close()
+
+    # number,time,msg,\n
+    total_messages = int((len(lines)-2)/4)
+    # messages are in the format - 4,8,
+    transcripts = []
+    # print(total_messages)
+
+    new_lines = []
+    start = 4
+    # ignoring sender-less messages
+    
+    prev_start_time = lines[3][:12]
+    prev_end_time = lines[3][17:29]
+    idx = lines[4].find(":")
+    if idx == -1:
+        prev_sender = "Unknown Speaker"
+        prev_message = lines[4]
+    else:   
+        prev_sender = lines[4][:idx]
+        prev_message = lines[4][idx+1:]
+    
+    # print(start_time,end_time,prev_sender,prev_message)
+    for i in range(8,4*(total_messages-1)+8,4):
+            # print(i)
+            idx = lines[i].find(":")
+            if idx == -1:
+                curr_sender = prev_sender
+                curr_message = ". "+ lines[i]
+            else:
+                curr_sender = lines[i][:idx]
+                curr_message = lines[i][idx+1:]
+
+            curr_start_time = lines[i-1][:12]
+            curr_end_time = lines[i-1][17:29]
+
+            if prev_sender == curr_sender:
+                prev_end_time = curr_end_time
+                prev_message = prev_message[:-1] + curr_message
+            
+            else:
+                # new_lines.append(roundTOSec(prev_start_time))
+                # new_lines.append(roundTOSec(prev_end_time))
+                # new_lines.append(prev_sender)
+                # new_lines.append(prev_message)
+
+                transcripts.append({
+                    "start_time": roundTOSec(prev_start_time),
+                    "end_time": roundTOSec(prev_end_time),
+                    "sender":prev_sender,
+                    "message": prev_message[:-1]
+                })
+
+                prev_start_time = curr_start_time
+                prev_end_time = curr_end_time
+                prev_sender = curr_sender
+                prev_message = curr_message
+    
+
+    # new_lines.append(roundTOSec(prev_start_time))  
+    # new_lines.append(roundTOSec(prev_end_time))          
+    # new_lines.append(prev_sender)                
+    # new_lines.append(prev_message)
+    transcripts.append({
+            "start_time": roundTOSec(prev_start_time),
+            "end_time": roundTOSec(prev_end_time), 
+            "sender":prev_sender,
+            "message": prev_message[:-1]
+            })
+    return transcripts
+
+# def convertTranscripts(new_lines):
+#     transcripts = []
+#     for i in range(0,int(len(new_lines)/4)):
+#         transcripts.append({
+#             "start_time": new_lines[i],
+#             "end_time": new_lines[i+1],
+#             "sender": new_lines[i+2],
+#             "message": new_lines[i+3],
+
+#         })
+    
+         
+     
+def roundTOSec(time_str): # take "00:09:04.570" as input and converts to nearest
+    # Parse the string into a timedelta object
+    time_delta = datetime.strptime(time_str, "%H:%M:%S.%f") - datetime(1900, 1, 1)
+    rounded_time_delta = timedelta(seconds=round(time_delta.total_seconds()))
+    rounded_time_str = str(datetime(1900, 1, 1) + rounded_time_delta)[11:]
+    return rounded_time_str
+
+
+
+if __name__ == "__main__":
+    path = "Zoom/Data/desinno.vtt"
+    transcripts = ModifyFile(path)
+    
+    file = open("Zoom/Output/transcript.json", "w", encoding='utf-8')
+    file.write(json.dumps(transcripts, ensure_ascii=False, indent=4))
+    file.close()
+    
