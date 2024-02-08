@@ -12,11 +12,18 @@ def ModifyFile(path):
     # print(total_messages)
 
     new_lines = []
+    start = 4
+    # ignoring sender-less messages
+    
     prev_start_time = lines[3][:12]
     prev_end_time = lines[3][17:29]
     idx = lines[4].find(":")
-    prev_sender = lines[4][:idx]
-    prev_message = lines[4][idx+1:]
+    if idx == -1:
+        prev_sender = "Unknown Speaker"
+        prev_message = lines[4]
+    else:   
+        prev_sender = lines[4][:idx]
+        prev_message = lines[4][idx+1:]
     
     # print(start_time,end_time,prev_sender,prev_message)
     for i in range(8,4*(total_messages-1)+8,4):
