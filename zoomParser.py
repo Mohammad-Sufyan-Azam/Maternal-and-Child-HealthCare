@@ -22,8 +22,13 @@ def ModifyFile(path):
     for i in range(8,4*(total_messages-1)+8,4):
             # print(i)
             idx = lines[i].find(":")
-            curr_sender = lines[i][:idx]
-            curr_message = lines[i][idx+1:]
+            if idx == -1:
+                curr_sender = prev_sender
+                curr_message = ". "+ lines[i]
+            else:
+                curr_sender = lines[i][:idx]
+                curr_message = lines[i][idx+1:]
+
             curr_start_time = lines[i-1][:12]
             curr_end_time = lines[i-1][17:29]
 
@@ -85,7 +90,7 @@ def roundTOSec(time_str): # take "00:09:04.570" as input and converts to nearest
 
 
 if __name__ == "__main__":
-    path = "Zoom/Data/thesis.vtt"
+    path = "desinno.vtt"
     transcripts = ModifyFile(path)
   
     # for i in range(0,len(transcripts)):
