@@ -20,7 +20,7 @@ def ModifyFile(path):
     
     # print(start_time,end_time,prev_sender,prev_message)
     for i in range(8,4*(total_messages-1)+8,4):
-            print(i)
+            # print(i)
             idx = lines[i].find(":")
             curr_sender = lines[i][:idx]
             curr_message = lines[i][idx+1:]
@@ -29,7 +29,7 @@ def ModifyFile(path):
 
             if prev_sender == curr_sender:
                 prev_end_time = curr_end_time
-                prev_message = prev_message + curr_message
+                prev_message = prev_message[:-1] + curr_message
             
             else:
                 # new_lines.append(roundTOSec(prev_start_time))
@@ -41,7 +41,7 @@ def ModifyFile(path):
                     "start_time": roundTOSec(prev_start_time),
                     "end_time": roundTOSec(prev_end_time),
                     "sender":prev_sender,
-                    "message": prev_message
+                    "message": prev_message[:-1]
                 })
 
                 prev_start_time = curr_start_time
@@ -58,7 +58,7 @@ def ModifyFile(path):
             "start_time": roundTOSec(prev_start_time),
             "end_time": roundTOSec(prev_end_time), 
             "sender":prev_sender,
-            "message": prev_message
+            "message": prev_message[:-1]
             })
     return transcripts
 
@@ -85,8 +85,14 @@ def roundTOSec(time_str): # take "00:09:04.570" as input and converts to nearest
 
 
 if __name__ == "__main__":
-    path = "desinno.vtt"
+    path = "Zoom/Data/thesis.vtt"
     transcripts = ModifyFile(path)
   
-    for i in range(0,len(transcripts)):
-         print(transcripts[i])
+    # for i in range(0,len(transcripts)):
+    #      print(transcripts[i])
+    
+    import json
+    file = open("transcript.json", "w", encoding='utf-8')
+    file.write(json.dumps(transcripts, ensure_ascii=False, indent=4))
+    file.close()
+    
