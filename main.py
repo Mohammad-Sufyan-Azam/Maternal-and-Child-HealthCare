@@ -204,23 +204,38 @@ async def create_upload_file(file: UploadFile):
     else:
         return "Error in Data"
 
+@app.get("/fetchGroupNamesZoom/")
+def fetchZoomGroupNumber():
+    documents = zoom_collection.find({}, {'group_name': 1}) 
+    for doc in documents:
+        print(doc.get("_id")) # type: ignore
+    
+    # print(type(groupNames))
+    return documents # type: ignore
 
 import Zoom.ZoomParser as zoom
-
 @app.post("/uploadZoomTranscript/")
 async def create_upload_zoom_file(file: UploadFile):
+    
 
     content = await file.read()
     utf8_content = content.decode('utf-8')
     content = utf8_content.split('\n')
     print("content", content)
-    file_name = file.filename
 
+    file_name = file.filename
+    group_name = 1
 
     transcripts = zoom.ModifyFile(content)
     data = { "transcripts" : transcripts }
     # print(data)
-    flag = zoom_collection.insert_one(data)
+    # flag = zoom_collection.insert_one(data)
+    
+    group_name = 1
+    update_data = zoom_collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": { "transcripts" : transcripts}}
+                )
 
     return "Transcripts added to the db"
 
@@ -239,7 +254,15 @@ async def create_upload_zoom_chats(file: UploadFile):
     chats = chat.txt_to_chat(content)
     data = { "chats" : chats }
     # print(data)
-    flag = zoom_collection.insert_one(data)
+    # flag = zoom_collection.insert_one(data)
+
+    group_name = 1
+    update_data = zoom_collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": { "chats" : chats }}
+                )
+
+
     return "Chats added to the db"
 
 import Zoom.Attendance as attendance
@@ -252,7 +275,14 @@ async def create_upload_zoom_attendance(file: UploadFile):
     # print(df["\ufeffMeeting ID"])
     admins, attendance_dict, otherInfo = attendance.csv_to_attendance_pandas(df)
     data = { "attendance" : attendance_dict }
-    flag = zoom_collection.insert_one(data)
+    # flag = zoom_collection.insert_one(data)
+
+    group_name = 1
+    update_data = zoom_collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": { "attendance" : attendance_dict }}
+                )
+
     return "Attendance added to the db"
 
 
