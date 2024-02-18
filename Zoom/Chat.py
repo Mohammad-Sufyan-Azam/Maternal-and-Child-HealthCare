@@ -1,15 +1,17 @@
 import re
 from datetime import datetime
 
-def txt_to_chat(txt_file):
+def txt_to_chat(lines):
     chat = []
-
-    with open(txt_file, 'r',encoding='utf-8') as file:
-        lines = file.readlines()
+    print(lines)
+    # with open(txt_file, 'r',encoding='utf-8') as file:
+    #     lines = file.readlines()
 
     current_entry = {'timestamp': None, 'sender': None, 'message': None, 'tags': []}
 
     for line in lines:
+        if line == "":
+            continue
         parts = line.strip().split('\t')
         timestamp_str, sender, message = parts[0], parts[1], parts[2]
 
@@ -62,16 +64,16 @@ def txt_to_chat(txt_file):
 
     #sort the formatted_chat by timestamp
     formatted_chat.sort(key=lambda x: x['timestamp'][0])
-
+    # print(formatted_chat)
     return formatted_chat
 
-# Example usage:
-txt_file_path = 'Zoom/Data/thesisChat.txt'
-chat_data = txt_to_chat(txt_file_path)
-# print(chat_data)
+# # Example usage:
+# txt_file_path = 'Zoom/Data/thesisChat.txt'
+# chat_data = txt_to_chat(txt_file_path)
+# # print(chat_data)
 
-import json
-file = open("Zoom/Output/chat.json", "w", encoding='utf-8')
-file.write(json.dumps(chat_data, ensure_ascii=False, indent=4))
-file.close()
+# import json
+# file = open("Zoom/Output/chat.json", "w", encoding='utf-8')
+# file.write(json.dumps(chat_data, ensure_ascii=False, indent=4))
+# file.close()
 

@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 import json
 
-def ModifyFile(path):
-    file = open(path, encoding="utf8")
-    lines = file.readlines()
-    file.close()
+def ModifyFile(lines):
+    # file = open(path, encoding="utf8")
+    # lines = file.readlines()
+    print(lines)
+    # file.close()
 
     # number,time,msg,\n
     total_messages = int((len(lines)-2)/4)
@@ -98,7 +99,7 @@ def roundTOSec(time_str): # take "00:09:04.570" as input and converts to nearest
 
 
 if __name__ == "__main__":
-    path = "Zoom/Data/desinno.vtt"
+    path = "desinno.vtt"
     transcripts = ModifyFile(path)
     
     file = open("Zoom/Output/transcript.json", "w", encoding='utf-8')

@@ -1,13 +1,13 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
-def csv_to_attendance_pandas(csv_file):
-    df = pd.read_csv(csv_file)
+def csv_to_attendance_pandas(df):
+    # df = pd.read_csv(csv_file)
     # print(df['Meeting ID'])
     # Assuming the columns are named as 'Name', 'Email', 'Duration', and others
     # Adjust column names accordingly if needed
     # df = df[['Name', 'Duration']]
-    meetingId = df['Meeting ID'].tolist()
+    meetingId = df['\ufeffMeeting ID'].tolist()
     participants = []
     indexofId = 0
     for i in range(len(meetingId)):
@@ -37,26 +37,26 @@ def csv_to_attendance_pandas(csv_file):
     otherInfo = {}
     totalDuration = df['Duration (Minutes)'][0]
     otherInfo['Total Duration'] = totalDuration
-    otherInfo['Meeting ID'] = df['Meeting ID'][0]
+    otherInfo['\ufeffMeeting ID'] = df['\ufeffMeeting ID'][0]
     otherInfo['Participants'] = df['Participants'][0]
     otherInfo['Start Time'] = df['Start Time'][0] 
     otherInfo['End Time'] = df['End Time'][0]
 
-    
+    # print(attendance_dict)
     return admins, attendance_dict,otherInfo
 
 
 # Example usage:
-csv_file_path = 'Zoom/data/thesis.csv'
-# csv_to_attendance_pandas(csv_file_path)
-admins, attendance_data,otherinfo = csv_to_attendance_pandas(csv_file_path)
+# csv_file_path = 'Zoom/data/thesis.csv'
+# # csv_to_attendance_pandas(csv_file_path)
+# admins, attendance_data,otherinfo = csv_to_attendance_pandas(csv_file_path)
 # print(attendance_data)
 # print(admins)
 # print(otherinfo)
 # for user, time_dict in attendance_data.items():
 #     print(f"{user}: {time_dict['Total']} min {time_dict['Seconds']} sec")
 
-import json
-file = open("Zoom/Output/attendance.json", "w", encoding='utf-8')
-file.write(json.dumps(attendance_data, ensure_ascii=False, indent=4))
-file.close()
+# import json
+# file = open("Zoom/Output/attendance.json", "w", encoding='utf-8')
+# file.write(json.dumps(attendance_data, ensure_ascii=False, indent=4))
+# file.close()

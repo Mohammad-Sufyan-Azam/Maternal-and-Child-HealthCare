@@ -1,4 +1,6 @@
 import asyncio
+import codecs
+import csv
 from datetime import datetime
 import json
 from typing import Optional,List
@@ -8,15 +10,18 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+import pandas as pd
 from pydantic import BaseModel
 from pymongo import MongoClient
 from fastapi.templating import Jinja2Templates
+import uvicorn
 import txttojsonparser as parser
 
 app = FastAPI()
 client = MongoClient("mongodb://localhost:27017/")
 database = client.students
 collection = database.get_collection("whatsapp1")
+zoom_collection = database.get_collection("zoom")
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -200,141 +205,85 @@ async def create_upload_file(file: UploadFile):
         return "Error in Data"
 
 
+import Zoom.ZoomParser as zoom
 
-# @app.put("/uploadfile/")
-# async def updateGroupMessage(group_name:str,new_messages):
-    
-#     # print(group_name,new_messages)
-#     newGroupInformation = new_messages
-#     data =  await fetchGroupInfo(group_name)
-    
-#     if data!= None:
-#         # adding new messages to content and updating it in database
-#         if "content" in newGroupInformation:
-#             data["content"].update(newGroupInformation["content"])
-#             update_data = collection.find_one_and_update(
-#                     {"group_name": group_name},
-#                     {"$set": {"content" : data["content"]}}
-#                 )
-#         # print(data['content'])
+@app.post("/uploadZoomTranscript/")
+async def create_upload_zoom_file(file: UploadFile):
 
-#         # if End Date is provided update it
-#         if "end_date" in newGroupInformation:
-#             if newGroupInformation["end_date"] != "NA":
-#                 data["end_date"] = newGroupInformation["end_date"]
-#                 update_data = collection.find_one_and_update(
-#                     {"group_name": group_name},
-#                     {"$set": {"end_date" : data["end_date"]}}
-#                 )
-        
-#         # change in group members
-#         if "members" in newGroupInformation:
-#             print(data['members'])
-#             newGroupMembers = newGroupInformation["members"]
-#             for member in newGroupMembers:
-#                 data["members"][member] = newGroupInformation["members"][member]
-
-#             update_data = collection.find_one_and_update(
-#                     {"group_name": group_name},
-#                     {"$set": {"members" : data["members"]}}
-#             )
-            
-#         return "Message updated to the database"
-    
-#     else:
-#         return "Data is NULL"
+    content = await file.read()
+    utf8_content = content.decode('utf-8')
+    content = utf8_content.split('\n')
+    print("content", content)
+    file_name = file.filename
 
 
+    transcripts = zoom.ModifyFile(content)
+    data = { "transcripts" : transcripts }
+    # print(data)
+    flag = zoom_collection.insert_one(data)
+
+    return "Transcripts added to the db"
 
 
+import Zoom.Chat as chat
+@app.post("/uploadZoomChats/")
+async def create_upload_zoom_chats(file: UploadFile):
+
+    content = await file.read()
+    utf8_content = content.decode('utf-8')
+    content = utf8_content.split('\n')
+    print("content", content)
+    file_name = file.filename
+
+
+    chats = chat.txt_to_chat(content)
+    data = { "chats" : chats }
+    # print(data)
+    flag = zoom_collection.insert_one(data)
+    return "Chats added to the db"
+
+import Zoom.Attendance as attendance
+@app.post("/uploadZoomAttendance/")
+async def create_upload_zoom_attendance(file: UploadFile):
+    # print(codecs.iterdecode(file.file, 'utf-8'))
+    csvReader = csv.DictReader(codecs.iterdecode(file.file, 'utf-8'))
+    df = pd.DataFrame(csvReader)
+    # print(df.columns.values)
+    # print(df["\ufeffMeeting ID"])
+    admins, attendance_dict, otherInfo = attendance.csv_to_attendance_pandas(df)
+    data = { "attendance" : attendance_dict }
+    flag = zoom_collection.insert_one(data)
+    return "Attendance added to the db"
+
+
+    # for row in csvReader:
+    #     print(row)
+
+    # print(csvReader.fieldnames)
+    # csvReader = list(csvReader)
+    # print(csvReader)
+
+    # l = csvReader['Topic'].tolist() # type: ignore
+    # print(l)
+    # # thesis.vtt
+    # content = await file.read()
+    # utf8_content = content.decode('utf-8')
+    # content = utf8_content.split('\n')
+    # print("content", content)
+    # df = pd.read_csv(content)
+    # print("df", df)
 
    
-    # IGNORE ----------------------------
+    
+    # # df = pd.read_csv(csv_file)
+    # # print("content", content)
+    # file_name = file.filename
 
-    # name = str(file.filename)[:-4]
-    # instead of making a json file, this returns a json
-    # await asyncio.sleep(2)
-    # f =  open('json output\group wise schema_2.json')  # to be replaced with name
-    # f =  open('example.json')
-    # data =  json.load(f)
+
+    # attend = attendance.csv_to_attendance_pandas(content)
+    # data = { "attendance" : attend }
     # # print(data)
-    # flag = collection.insert_one(data)
-    # f.close()
-
-   
-
-
-# ROUGH
-
-# POST REQUESTS
-# @app.post("/")
-# async def addMessage(grpmsg : groupMessages):
-#     print(grpmsg.model_dump())
-#     data =  collection.insert_one(grpmsg.model_dump())
-#     return "Message added to the database"
-
-
-# @app.put("/update/{group_number}")
-# async def updateMessage(group_number:int,new_messages:updateGroupMessages):
-#     print(new_messages.model_dump())
-#     newGroupInformation = new_messages.model_dump()
-#     data =  await fetchGroupInfo(group_number)
-
-#     if data!= None:
-#         # adding new messages to content and updating it in database
-#         if "content" in newGroupInformation:
-#             data["content"].update(newGroupInformation["content"])
-#             update_data = collection.find_one_and_update(
-#                     {"group_number": group_number},
-#                     {"$set": {"content" : data["content"]}}
-#                 )
-#         # print(data['content'])
-
-#         # if End Date is provided update it
-#         if "end_date" in newGroupInformation:
-#             if newGroupInformation["end_date"] != "NA":
-#                 data["end_date"] = newGroupInformation["end_date"]
-#                 update_data = collection.find_one_and_update(
-#                     {"group_number": group_number},
-#                     {"$set": {"end_date" : data["end_date"]}}
-#                 )
-        
-#         # change in group members
-#         if "members" in newGroupInformation:
-#             newGroupMembers = newGroupInformation["members"]
-#             for member in newGroupMembers:
-#                 data["members"][member] = newGroupInformation["members"][member]
-
-#             update_data = collection.find_one_and_update(
-#                     {"group_number": group_number},
-#                     {"$set": {"members" : data["members"]}}
-#             )
-            
-                    
-#         # update_data = collection.find_one_and_update(
-#         #         {"group_number": group_number},
-#         #         {"$set": {
-#         #                 "members" : data["members"],
-#         #                 "end_date": data["end_date"],
-#         #                 "content" : data["content"]
-#         #                 } 
-#         #         }
-#         # )
-
-#     return "Message updated to the database"
-    
-
-# @app.get("/admins/{group_number}")
-# async def getAdmins(group_number : int):
-#     data =  await fetchGroupInfo(group_number)
-#     if data == None:
-#         return None
-#     return data["group_admins"] 
-
-
-# @app.get("/messages/{group_number}")
-# async def getMessages(group_number:int):
-#     data =  await fetchGroupInfo(group_number)
-#     if data == None:
-#         return None
-#     return data["content"]
+    # flag = zoom_collection.insert_one(data)
+    return "Attendance added to the db"
+# if __name__ == "__main__":
+#    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
