@@ -182,6 +182,85 @@ async def updateGroupMessage(group_name:str,new_messages):
     else:
         return "Data is NULL"
 
+#  modification
+    
+# add admin
+@app.post("/addGroupAdmin/")
+async def addGroupAdmin(group_name:str,admin:str):
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        data["group_admins"].append(admin)
+        update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"group_admins" : data["group_admins"]}}
+                )
+        return "Admin added to the group"
+    else:
+        return "No such group number"
+    
+# remove admin
+@app.post("/removeGroupAdmin/")
+async def removeGroupAdmin(group_name:str,admin:str):
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        try:
+            data["group_admins"].remove(admin)
+            update_data = collection.find_one_and_update(
+                        {"group_name": group_name},
+                        {"$set": {"group_admins" : data["group_admins"]}}
+                    )
+            return "Admin removed from the group"
+        
+        except:
+            return "Admin not found in the group"
+    else:
+        return "No such group number"
+
+# add member
+@app.post("/addGroupMember/")
+async def addGroupMember(group_name:str,member:str):
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        data["members"][member] = True
+        update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"members" : data["members"]}}
+                )
+        return "Member added to the group"
+    else:
+        return "No such group number"
+
+# remove member
+@app.post("/removeGroupMember/")
+async def removeGroupMember(group_name:str,member:str):
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        try:
+            data["members"][member] = False
+            update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"members" : data["members"]}}
+                )
+            return "Member removed from the group"
+        except:
+            return "Member not found in the group"
+    else:
+        return "No such group number"
+
+# change group name
+@app.post("/changeGroupName/")
+async def changeGroupName(group_name:str,new_group_name:str):
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        data["group_name"] = new_group_name
+        update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"group_name" : data["group_name"]}}
+                )
+        return "Group name changed"
+    else:
+        return "No such group number"
+
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
 
@@ -205,18 +284,22 @@ async def create_upload_file(file: UploadFile):
         return "Error in Data"
 
 @app.get("/fetchGroupNamesZoom/")
-def fetchZoomGroupNumber():
-    documents = zoom_collection.find({}, {'group_name': 1}) 
-    for doc in documents:
-        print(doc.get("_id")) # type: ignore
+def fetchZoomGroupNumber(group_name:int):
+    # documents = zoom_collection.find({}, {'group_name': group_name}) 
+    # for doc in documents:
+    #     print(doc.get("_id")) # type: ignore
+    # print(doc)
+    # # print(type(groupNames))
+    data =  zoom_collection.find_one({"group_name" : group_name})
+    if data == None:
+        return None
+    return data["transcripts"]
     
-    # print(type(groupNames))
-    return documents # type: ignore
 
 import Zoom.ZoomParser as zoom
 @app.post("/uploadZoomTranscript/")
 async def create_upload_zoom_file(file: UploadFile):
-    
+
 
     content = await file.read()
     utf8_content = content.decode('utf-8')
@@ -227,15 +310,19 @@ async def create_upload_zoom_file(file: UploadFile):
     group_name = 1
 
     transcripts = zoom.ModifyFile(content)
-    data = { "transcripts" : transcripts }
+    data = {"group_name": group_name, "transcripts" : transcripts }
     # print(data)
     # flag = zoom_collection.insert_one(data)
     
     group_name = 1
-    update_data = zoom_collection.find_one_and_update(
-                    {"group_name": group_name},
-                    {"$set": { "transcripts" : transcripts}}
-                )
+
+    if fetchZoomGroupNumber(group_name) == None:
+        add_data = zoom_collection.insert_one(data)
+    else:
+        update_data = zoom_collection.find_one_and_update(
+                        {"group_name": group_name},
+                        {"$set": { "transcripts" : transcripts}}
+                    )
 
     return "Transcripts added to the db"
 
@@ -257,10 +344,13 @@ async def create_upload_zoom_chats(file: UploadFile):
     # flag = zoom_collection.insert_one(data)
 
     group_name = 1
-    update_data = zoom_collection.find_one_and_update(
-                    {"group_name": group_name},
-                    {"$set": { "chats" : chats }}
-                )
+    if fetchZoomGroupNumber(group_name) == None:
+        add_data = zoom_collection.insert_one(data)
+    else:
+        update_data = zoom_collection.find_one_and_update(
+                        {"group_name": group_name},
+                        {"$set": { "chats" : chats }}
+                    )
 
 
     return "Chats added to the db"
@@ -278,42 +368,20 @@ async def create_upload_zoom_attendance(file: UploadFile):
     # flag = zoom_collection.insert_one(data)
 
     group_name = 1
-    update_data = zoom_collection.find_one_and_update(
-                    {"group_name": group_name},
-                    {"$set": { "attendance" : attendance_dict }}
-                )
+    if fetchZoomGroupNumber(group_name) == None:
+        add_data = zoom_collection.insert_one(data)
+    else:
+        update_data = zoom_collection.find_one_and_update(
+                        {"group_name": group_name},
+                        {"$set": { "attendance" : attendance_dict }}
+                    )
 
     return "Attendance added to the db"
 
 
-    # for row in csvReader:
-    #     print(row)
-
-    # print(csvReader.fieldnames)
-    # csvReader = list(csvReader)
-    # print(csvReader)
-
-    # l = csvReader['Topic'].tolist() # type: ignore
-    # print(l)
-    # # thesis.vtt
-    # content = await file.read()
-    # utf8_content = content.decode('utf-8')
-    # content = utf8_content.split('\n')
-    # print("content", content)
-    # df = pd.read_csv(content)
-    # print("df", df)
-
-   
-    
-    # # df = pd.read_csv(csv_file)
-    # # print("content", content)
-    # file_name = file.filename
+# modification requests
 
 
-    # attend = attendance.csv_to_attendance_pandas(content)
-    # data = { "attendance" : attend }
-    # # print(data)
-    # flag = zoom_collection.insert_one(data)
-    return "Attendance added to the db"
 # if __name__ == "__main__":
 #    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+

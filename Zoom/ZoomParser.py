@@ -4,7 +4,7 @@ import json
 def ModifyFile(lines):
     # file = open(path, encoding="utf8")
     # lines = file.readlines()
-    print(lines)
+    # print(lines)
     # file.close()
 
     # number,time,msg,\n
