@@ -116,7 +116,7 @@ import {
       event.preventDefault();
   
       try {
-          const response = await axios.post('http://localhost:8000/submit-form', {
+          const response = await axios.post('http://localhost:8000/changeGroupName', {
             currentGroupName,
             newGroupName
           });
