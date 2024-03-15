@@ -31,6 +31,12 @@ const HomeLayout = () => {
           {/* Placeholder content */}
           <p>Configure settings for your dashboard here.</p>
         </section>
+
+        <section className="dashboard-section">
+          <h2>Moduify</h2>
+          {/* Placeholder content */}
+          <p>Configure settings for your dashboard here.</p>
+        </section>
       </main>
     </div>
   );

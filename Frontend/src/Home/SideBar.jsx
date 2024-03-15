@@ -22,6 +22,11 @@ const Sidebar = () => {
           <li>
             <Link className='sideOption' to="/Upload">Upload</Link>
           </li>
+
+          <li>
+            <Link className='sideOption' to="/Modify">Modify</Link>
+          </li>
+
         </ul>
       </nav>
       <Outlet />

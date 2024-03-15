@@ -26,18 +26,17 @@ zoom_collection = database.get_collection("zoom")
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "https://127.0.0.1",
-    "https://127.0.0.1:8080"
-    ]
+    "http://localhost:3000",
+    "localhost:3000"
+]
+
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 # app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -247,9 +246,16 @@ async def removeGroupMember(group_name:str,member:str):
     else:
         return "No such group number"
 
+class FormData(BaseModel):
+        currentGroupName: str
+        newGroupName : str
+
 # change group name
-@app.post("/changeGroupName/")
-async def changeGroupName(group_name:str,new_group_name:str):
+@app.post("/changeGroupName")
+async def changeGroupName(formdata : FormData):
+    group_name = formdata.currentGroupName
+    new_group_name = formdata.newGroupName
+    print("changing groupieeeee")
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         data["group_name"] = new_group_name
@@ -384,4 +390,3 @@ async def create_upload_zoom_attendance(file: UploadFile):
 
 # if __name__ == "__main__":
 #    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
-
