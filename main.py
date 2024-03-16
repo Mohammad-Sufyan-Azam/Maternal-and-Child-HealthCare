@@ -182,10 +182,19 @@ async def updateGroupMessage(group_name:str,new_messages):
         return "Data is NULL"
 
 #  modification
-    
+class FormData(BaseModel):
+        currentGroupName: str
+        groupMember : str
+        newGroupName : str
+        adminName : str
+
 # add admin
-@app.post("/addGroupAdmin/")
-async def addGroupAdmin(group_name:str,admin:str):
+@app.post("/addGroupAdmin")
+async def addGroupAdmin(form : FormData):
+
+    group_name = form.currentGroupName
+    admin = form.adminName
+
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         data["group_admins"].append(admin)
@@ -198,8 +207,10 @@ async def addGroupAdmin(group_name:str,admin:str):
         return "No such group number"
     
 # remove admin
-@app.post("/removeGroupAdmin/")
-async def removeGroupAdmin(group_name:str,admin:str):
+@app.post("/removeGroupAdmin")
+async def removeGroupAdmin(form : FormData):
+    group_name = form.currentGroupName
+    admin = form.adminName
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         try:
@@ -215,9 +226,15 @@ async def removeGroupAdmin(group_name:str,admin:str):
     else:
         return "No such group number"
 
+
+
 # add member
-@app.post("/addGroupMember/")
-async def addGroupMember(group_name:str,member:str):
+@app.post("/addGroupMember")
+async def addGroupMember(form : FormData):
+
+    group_name = form.currentGroupName
+    member = form.groupMember
+    print("here"+form.newGroupName)
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         data["members"][member] = True
@@ -230,8 +247,10 @@ async def addGroupMember(group_name:str,member:str):
         return "No such group number"
 
 # remove member
-@app.post("/removeGroupMember/")
-async def removeGroupMember(group_name:str,member:str):
+@app.post("/removeGroupMember")
+async def removeGroupMember(form : FormData):
+    group_name = form.currentGroupName
+    member = form.groupMember
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         try:
@@ -246,9 +265,6 @@ async def removeGroupMember(group_name:str,member:str):
     else:
         return "No such group number"
 
-class FormData(BaseModel):
-        currentGroupName: str
-        newGroupName : str
 
 # change group name
 @app.post("/changeGroupName")
