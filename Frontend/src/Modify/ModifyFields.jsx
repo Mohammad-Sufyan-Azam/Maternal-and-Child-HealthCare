@@ -107,27 +107,43 @@ import {
   //   );
   // }
   function GroupNameDropdown() {
+
+    // forms 
     const [groupNameForm, setGroupNameForm] = useState(false);
-    const [groupMemberForm, setGroupMemberForm] = useState(false);
+    const [addgroupMemberForm, setAddGroupMemberForm] = useState(false);
+    const [addAdminForm, setAddAdminForm] = useState(false);
+    const [removeAdminForm, setRemoveAdminForm] = useState(false);
+    const [removeMembersForm, setRemoveMembersForm] = useState(false);
+
+    // form fields
     const [currentGroupName, setCurrentGroupName] = useState('');
     const [newGroupName, setNewGroupName] = useState('');
+    const [groupMember, setGroupMember] = useState('');
+    const [adminName, setAdminName] = useState('');
+    
   
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event, type) => {
       event.preventDefault();
-  
+      console.log(type)
+      const url = 'http://localhost:8000/' + type;    
       try {
-          const response = await axios.post('http://localhost:8000/changeGroupName', {
+          const response = await axios.post(url, {
             currentGroupName,
-            newGroupName
+            groupMember,
+            newGroupName,
+            adminName,
           });
           // const response = await axios.post('http://localhost:8000/submit-form',{});
           console.log(response.data);
         } catch (error) {
           console.error('Error:', error);
         }
+      console.log('Request Sent!');
+     
+
       };
   
-    const handleSave = () => {
+    const handleSave = (props) => {
       // Add your logic to handle saving the new group name
       console.log('Current Group Name:', currentGroupName);
       console.log('New Group Name:', newGroupName);
@@ -135,21 +151,54 @@ import {
   
     const handleGroupnameClick = () => {
       setGroupNameForm(true);
-      setGroupMemberForm(false);
+      setAddGroupMemberForm(false);
+      setAddAdminForm(false);
+      setRemoveAdminForm(false);
+      setRemoveMembersForm(false);
     };
   
-    const handleGroupMembersClick = () => {
+    const handleAddGroupMembersClick = () => {
       setGroupNameForm(false);
-      setGroupMemberForm(true);
+      setAddGroupMemberForm(true);
+      setAddAdminForm(false);
+      setRemoveAdminForm(false);
+      setRemoveMembersForm(false);
     };
+
+    const handleAddAdminClick = () => {
+      setGroupNameForm(false);
+      setAddGroupMemberForm(false);
+      setAddAdminForm(true);
+      setRemoveAdminForm(false);
+      setRemoveMembersForm(false);
+    };
+
+    const handleRemoveAdminClick = () => {
+      setGroupNameForm(false);
+      setAddGroupMemberForm(false);
+      setAddAdminForm(false);
+      setRemoveAdminForm(true);
+      setRemoveMembersForm(false);
+    }
+
+    const handleRemoveMemebersClick = () => {
+      setGroupNameForm(false);
+      setAddGroupMemberForm(false);
+      setAddAdminForm(false);
+      setRemoveAdminForm(false);
+      setRemoveMembersForm(true);
+    }
   
     return (
       <>
         <DropdownButton id="groupname-dropdown" title="Modify" variant="primary">
+          <Dropdown.Item onClick={handleAddAdminClick}>Add Admin</Dropdown.Item>
+          <Dropdown.Item onClick={handleRemoveAdminClick}>Remove Admin</Dropdown.Item>
           <Dropdown.Item onClick={handleGroupnameClick}>Group Name</Dropdown.Item>
-          <Dropdown.Item onClick={handleGroupMembersClick}>Group Members</Dropdown.Item>
+          <Dropdown.Item onClick={handleAddGroupMembersClick}>Add Group Members</Dropdown.Item>
+          <Dropdown.Item onClick={handleRemoveMemebersClick}>Remove Group Members</Dropdown.Item>
         </DropdownButton>
-  
+        <div>dd</div>
         {groupNameForm && (
           <Form  onSubmit={handleSubmit}>
             <Form.Group controlId="currentGroupName">
@@ -168,13 +217,13 @@ import {
                 onChange={(e) => setNewGroupName(e.target.value)}
               />
             </Form.Group>
-            <Button variant="primary" type="submit" onClick={handleSave}>
+            <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e, "changeGroupName")}>
               Save
             </Button>
           </Form>
         )}
   
-        {groupMemberForm && (
+        {addgroupMemberForm && (
           <Form>
               <Form.Group controlId="currentGroupName">
               <Form.Label>Current Group Name</Form.Label>
@@ -184,20 +233,95 @@ import {
                 onChange={(e) => setCurrentGroupName(e.target.value)}
               />
             </Form.Group>
-            <Form.Group controlId="groupMembers">
+            <Form.Group controlId="groupMember">
               <Form.Label>Group Members</Form.Label>
               <Form.Control
                 type="text"
-                value={currentGroupName} // Assuming this should display the current group name
-                onChange={(e) => setCurrentGroupName(e.target.value)}
+                value={groupMember} // Assuming this should display the current group name
+                onChange={(e) => setGroupMember(e.target.value)}
               />
             </Form.Group>
             {/* Add more form elements for group members as needed */}
-            <Button variant="primary" type="submit" onClick={handleSave}>
+            <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e, "addGroupMember")}>
               Save
             </Button>
           </Form>
         )}
+
+
+        {addAdminForm && ( 
+          <Form>
+            <Form.Group controlId="currentGroupName">
+              <Form.Label>Current Group Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentGroupName}
+                onChange={(e) => setCurrentGroupName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="adminName">
+              <Form.Label>Admin Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={adminName}
+                onChange={(e) => setAdminName(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e, "addGroupAdmin")}>
+              Save
+            </Button>
+          </Form>
+        )}
+
+        {removeAdminForm && (
+          <Form>
+            <Form.Group controlId="currentGroupName">
+              <Form.Label>Current Group Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentGroupName}
+                onChange={(e) => setCurrentGroupName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="adminName">
+              <Form.Label>Admin Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={adminName}
+                onChange={(e) => setAdminName(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e, "removeGroupAdmin")}>
+              Save
+            </Button>
+          </Form>
+        )}
+
+        {removeMembersForm && (
+            <Form>
+            <Form.Group controlId="currentGroupName">
+              <Form.Label>Current Group Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentGroupName}
+                onChange={(e) => setCurrentGroupName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="groupMember">
+              <Form.Label>Group Members</Form.Label>
+              <Form.Control
+                type="text"
+                value={groupMember} // Assuming this should display the current group name
+                onChange={(e) => setGroupMember(e.target.value)}
+              />
+            </Form.Group>
+            {/* Add more form elements for group members as needed */}
+            <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e, "removeGroupMember")}>
+              Save
+            </Button>
+            </Form>
+            )}
+
       </>
     );
   }
