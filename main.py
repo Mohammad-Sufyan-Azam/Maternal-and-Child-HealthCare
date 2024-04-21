@@ -104,6 +104,8 @@ async def fetchGroupInfo(group_name):
 async def updateGroupMessage(group_name:str,new_messages):
     # print(group_name,new_messages)
     newGroupInformation = new_messages
+    print("--------------------")
+    print(newGroupInformation)
     data =  await fetchGroupInfo(group_name)
     
     if data!= None:
@@ -113,31 +115,38 @@ async def updateGroupMessage(group_name:str,new_messages):
                 if date in data["content"]:
                     # if timestamp same i.e new walle ka naaya and old walle ka last toh id update krni h
 
-                    # oldTimestamps = data["content"][date] # [{},{},..........]
-                    # newTimestamps = newGroupInformation["content"][date] # [{},{},..........]
-
-                    # # if compareTimeStamps(newTimestamps[0]["timestamp"],oldTimestamps[-1]["timestamp"]) > 0:
-
-                    # newTimestamps_start = newTimestamps[0]["timestamp"]
-                    # oldTimestamps_end = data["content"][date][-1]["timestamp"]
-              
-                    # # Note one case is not considered 
-                    # indicator = compareTimeStamps(newTimestamps_start,oldTimestamps_end)
-                    # print(indicator)
-                    # if indicator > 0: # matlab aage ke messages ke purane messages se so
-                    #     data["content"][date].extend(newGroupInformation["content"][date])
+                    oldTimestamps = data["content"][date] # [{},{},..........]
+                    newTimestamps = newGroupInformation["content"][date] # [{},{},..........]
                     
-                    # elif indicator < 0: # matlab new messages main purane messages repeated [1,2,3,4,4,5] [2,3,4,4,5,| 5,6]
-                    #     pass
-                    # else: # [1,2,3,4] [4,4,4,5,6,7] 
-                    #     offset = int(data["content"][date][-1]["message_id"][-1]) + 1
-                    #     for msg in newTimestamps:
-                    #         if msg["timestamp"] == oldTimestamps_end:
-                    #             msg["message_id"] = msg["message_id"][:-1] + str(offset)
-                    #             offset+=1
-                    #         else:
-                    #             break
-                    data["content"][date].extend(newGroupInformation["content"][date])
+                    lastMessageOldTimestamp = oldTimestamps[-1]["timestamp"]
+                    firstMessageNewTimestamp = newTimestamps[0]["timestamp"]
+
+                    # [1,2,3] [4,5,6,7,8]
+                    if compareTimeStamps(lastMessageOldTimestamp,firstMessageNewTimestamp) < 0:
+                        data["content"][date].extend(newGroupInformation["content"][date])
+
+                    # [1,2,3a,3b,4,5]  [3a,3b,4,5,6,7]
+                    elif compareTimeStamps(lastMessageOldTimestamp,firstMessageNewTimestamp) > 0:
+                        sameMessageidx = oldTimestamps.index(newTimestamps[0])
+                        print(newTimestamps[0])
+                        print(oldTimestamps[sameMessageidx])
+                        offset = len(oldTimestamps) - sameMessageidx # 6 - 2 = 4
+                        print("offset",offset)
+                        data["content"][date].extend(newGroupInformation["content"][date][offset:])
+
+                    
+                    # [1,2,3a,3b,3c,3d] [3b,3c,3d] or [3e,3f,3g] # doesnot takes into account same messages sent by same user at the same timestamp
+                    else:
+                        sameMessageidx = oldTimestamps.index(newTimestamps[0])
+                        print("sameMessageidx",sameMessageidx)
+                        if sameMessageidx == -1:
+                            data["content"][date].extend(newGroupInformation["content"][date])
+                        else:
+                            offset = len(oldTimestamps) - sameMessageidx 
+                            print("offset",offset)
+                            data["content"][date].extend(newGroupInformation["content"][date][offset:])
+                   
+                    # data["content"][date].extend(newGroupInformation["content"][date])
                         
                 else: # no messages iss date ki in purana database
                     data["content"][date] = newGroupInformation["content"][date]
@@ -173,7 +182,14 @@ async def updateGroupMessage(group_name:str,new_messages):
 
             update_data = collection.find_one_and_update(
                     {"group_name": group_name},
-                    {"$set": {"members" : data["members"]}}
+                    {"$set": {
+                        "members" : data["members"],
+                        "unknown_user_count" : newGroupInformation["unknown_user_count"],
+                        "known_users" : newGroupInformation["known_users"],
+                        "unknown_users" : newGroupInformation["unknown_users"]
+
+                        }
+                    }
             )
             
         return "Message updated to the database"
@@ -283,6 +299,31 @@ async def changeGroupName(formdata : FormData):
     else:
         return "No such group number"
 
+@app.get("/fetchUnknownUsers")
+def fetchUnknownUsers(group_name:str):
+    data =  collection.find_one({"group_name": group_name})
+    # print(data['unknown_user_count'])
+    unknown_user_count = 0
+    known_users = []
+    unknown_users = []
+    try :
+        unknown_user_count = data['unknown_user_count']
+    except:
+        unknown_user_count = 0
+
+    try:
+        known_users = data['known_users']
+    except:
+        known_users = []
+
+    try:
+        unknown_users = data['unknown_users']
+    except:
+        unknown_users = []
+
+    return [unknown_user_count,known_users,unknown_users]
+    
+
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
 
@@ -290,9 +331,13 @@ async def create_upload_file(file: UploadFile):
     utf8_content = content.decode('utf-8')
     content = utf8_content.split('\n')
     file_name = file.filename
-    data = parser.mainJSONParser(content, file_name)
+    group_name = file_name[19:-4]
+    print(group_name)
+    user_info = fetchUnknownUsers(group_name)
+    print(user_info)
+    data = parser.mainJSONParser(content, file_name,user_info)
     groupNames = fetchGroupNames()
-
+    print(data)
     if data != None:
         if data['group_name'] in groupNames:
             # then update

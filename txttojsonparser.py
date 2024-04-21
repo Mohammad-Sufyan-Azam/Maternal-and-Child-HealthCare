@@ -219,8 +219,11 @@ class Group:
             print("Error in getting group messsages.")
             exit(1)
 
-
-    def update_group_structure(self, file_name, system_messages, updated_lines):
+    def check_valid_user(self, name):
+        if name[0] == 'M' and name[1:].isdigit():
+            return True
+        return False
+    def update_group_structure(self, file_name, system_messages, updated_lines, user_info):
         try:
             json_key = {}
             json_key["_id"] = self.get_group_id()
@@ -230,6 +233,47 @@ class Group:
             json_key["start_date"] = self.get_start_date(system_messages)
             json_key["end_date"] = self.get_end_date(system_messages)
             json_key["content"] = self.get_group_data(updated_lines)
+            print("-------------------")
+            print(user_info)
+            
+            json_key['unknown_user_count'], json_key["known_users"], json_key["unknown_users"] = user_info[0], user_info[1], user_info[2]
+
+            for i in json_key['members']:
+                print(i)
+                if not self.check_valid_user(i):
+                    json_key['unknown_user_count'] += 1
+                    json_key["unknown_users"].append(i)
+                else:
+                    json_key["known_users"].append(i)
+
+
+            # {member_ids : [phone_number1, phone_number2, ...]}  
+
+            #  if member_id is given by moderator : {M1 : [phonenumber1,...]} phone number has to be manually added by moderator 
+            #  if member_id not given             
+                # 1. phone number or String name
+                            # saved as N_i
+                                # person already in group -> add number/name to list and delete N_i
+                                # person not in group -> add to member_ids, add to memebr_mapping
+
+            # json_key["known_member_mappings"] = {} # {M_i/N_i : [phone_number1|String|id]}
+            # json_key["unknown_member_mapping"] = {} # [string name/phone number] : N_i
+
+            # for i in json_key['members']:
+            #     print(i)
+            #     if i[0] == 'M' and i[1:].isdigit(): # satisfies convention add them to member_ids list
+            #         json_key["known_member_mappings"][i] = [i]
+            #     else: # doesnot satisfies convention
+            #         id = 'N' + str(len(json_key["unknown_member_mapping"])+1)
+            #         json_key["unknown_member_mapping"][i] = 'N' + id
+            #         json_key["known_member_mappings"][id] = [i] 
+
+            #     # else: # doesnot satisfies convention
+            #     #     id = 'N' + str(len(json_key["member_mapping"])+1)
+            #     #     json_key["member_mapping"][i] = 'N' + id
+
+
+
             return json_key
         except:
             print("Error in updating group structure (update_group_structure() function).")
@@ -354,7 +398,7 @@ def update_message_structure(lines, file_name, msg, grp):
         exit(1)
 
 
-def mainJSONParser(content, file_name, store=True):
+def mainJSONParser(content, file_name, user_info, store=True):
     try:
         message = Message()
         group_schema = Group()
@@ -365,10 +409,12 @@ def mainJSONParser(content, file_name, store=True):
         #     store_json(updated_lines, "message_structure_2.json")
         system_messages, user_messages = message.get_user_and_system_messages(updated_lines) # type: ignore
 
-        group_json = group_schema.update_group_structure(file_name, system_messages, updated_lines)
+        group_json = group_schema.update_group_structure(file_name, system_messages, updated_lines,user_info)
         if store:
+            # print(group_json)
             return group_json
-            
+        
+        
         # user_json = update_user_structure(path, user_messages, user_schema)
         # print(user_json)
         # if store:

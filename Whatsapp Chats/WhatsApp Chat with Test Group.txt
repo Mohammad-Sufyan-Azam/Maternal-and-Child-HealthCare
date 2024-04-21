@@ -1,30 +1,4 @@
-11/7/23, 9:09 AM - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them. Tap to learn more.
-11/7/23, 9:09 AM - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them. Tap to learn more.
-11/7/23, 9:05 AM - You created group "Test"
-11/7/23, 9:05 AM - You added Sufyan
-11/7/23, 9:07 AM - Sufyan: ismei saare settings change krke like admins add/remove/change etc dekhengey
-11/7/23, 9:08 AM - You changed the group description
-11/7/23, 9:07 AM - Sufyan: BTP script ke corner cases handle krne ke liye
-11/7/23, 9:10 AM - Sufyan: <Media omitted>
-11/7/23, 9:46 AM - You changed the group name from "Test" to "Test Group"
-11/7/23, 9:47 AM - Sufyan: Ismei admins ko add/remove jab krte hain toh system generated message bhi nahi aata 🥲
-11/7/23, 10:04 AM - You removed Ishit (CSAM)
-11/7/23, 10:04 AM - Sufyan: Removal toh sahi h
-11/7/23, 10:04 AM - Ishit (CSAM): Sahi kara tune. Saare tests ispe krlengey
-11/7/23, 10:05 AM - You added Ishit (CSAM)
-11/7/23, 10:07 AM - Ishit (CSAM) left
-11/7/23, 10:07 AM - Sufyan: Hmm
-11/7/23, 10:09 AM - You added Ishit (CSAM)
-11/7/23, 10:09 AM - Sufyan: System generated messages bas admin waale mai problem kr rhe hain abhi tak
-11/7/23, 10:09 AM - Sufyan: Unka status alag se lelengey sir se
-11/7/23, 10:23 AM - Ishit (CSAM): Mujhe nhi lagta admin walli problem aayegi shyd
-11/7/23, 10:35 AM - Sufyan: Han, because admin toh most probably 1-2 hi rahenge max
-11/7/23, 10:35 AM - Sufyan: Par unke naam bhi system mai enter krna padega
-11/7/23, 10:36 AM - Sufyan: Aur agar aisa hua ki usmei se bhi ek chala gaya for some personal reason project chod kr
-11/7/23, 10:37 AM - Sufyan: Unka updates manually hi lena padega <This message was edited>
-11/7/23, 10:38 AM - Sufyan: Aur ismei jo participants at the time of group creation add kiye gaye they uska bhi record nahi h
-12/7/23, 1:23 PM - You started a call
-12/7/23, 2:11 PM - Sufyan: testing for emojis 😌🥚🙌 :)(
-12/7/23, 2:12 PM - Sufyan: badhiya
-12/7/23, 2:40 PM - Sufyan: \udp
-13/7/23, 2:40 PM - Sufyan: lorem ipsum
+11/7/23, 10:04 AM - M2: Removal toh sahi h
+11/7/23, 10:05 AM - M2: yeh aaayega
+11/7/23, 10:06 AM - M2: yeh aaayega 2
+
