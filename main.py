@@ -114,7 +114,6 @@ async def updateGroupMessage(group_name:str,new_messages):
             for date in newGroupInformation["content"]:
                 if date in data["content"]:
                     # if timestamp same i.e new walle ka naaya and old walle ka last toh id update krni h
-
                     oldTimestamps = data["content"][date] # [{},{},..........]
                     newTimestamps = newGroupInformation["content"][date] # [{},{},..........]
                     
@@ -321,8 +320,30 @@ def fetchUnknownUsers(group_name:str):
     except:
         unknown_users = []
 
-    return [unknown_user_count,known_users,unknown_users]
+    try:
+        phone_dict = data["phone_dict"]
+    except:
+        phone_dict = {} # name : {numbers}
+
+    return [unknown_user_count,known_users,unknown_users,phone_dict]
     
+@app.post("/addPhoneNumbers")
+async def addPhoneNumbers(group_name:str,name : str, phone_number : int):
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        try:
+            data["phone_dict"][name].append(phone_number)
+        except:
+            data["phone_dict"][name] = [phone_number]
+        update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"phone_dict" : data["phone_dict"]}}
+                )
+        return "Phone number added to the group"
+    else:
+        return "No such group number"
+
+
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
