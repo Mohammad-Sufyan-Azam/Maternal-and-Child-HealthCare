@@ -236,7 +236,7 @@ class Group:
             print("-------------------")
             print(user_info)
             
-            json_key['unknown_user_count'], json_key["known_users"], json_key["unknown_users"] = user_info[0], user_info[1], user_info[2]
+            json_key['unknown_user_count'], json_key["known_users"], json_key["unknown_users"],json_key["phone_dict"] = user_info[0], user_info[1], user_info[2], user_info[3]
 
             for i in json_key['members']:
                 print(i)
