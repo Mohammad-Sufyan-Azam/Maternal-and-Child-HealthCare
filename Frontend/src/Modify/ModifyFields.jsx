@@ -130,7 +130,7 @@ import {
           const response = await axios.post(url, {
             currentGroupName,
             groupMember,
-            newGroupName,
+            newGroupName,   
             adminName,
           });
           // const response = await axios.post('http://localhost:8000/submit-form',{});
@@ -139,8 +139,6 @@ import {
           console.error('Error:', error);
         }
       console.log('Request Sent!');
-     
-
       };
   
     const handleSave = (props) => {

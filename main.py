@@ -1,5 +1,6 @@
 import asyncio
 import codecs
+from collections import defaultdict
 import csv
 from datetime import datetime
 import json
@@ -27,9 +28,24 @@ from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
     "http://localhost:3000",
-    "localhost:3000"
+    "localhost:3000",
+    "http://localhost",
+    "http://localhost:8080",
 ]
-
+month_names = {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
+    }
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +54,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
 
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -68,13 +85,82 @@ async def root():
 async def read_item(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})  
 
+@app.get("/getGroupNames")
+async def fetchAllGroupNames():
+    documents = collection.find() 
+    groupNames = {document['group_name'] for document in documents}
+    print(type(groupNames))
+    return groupNames
+
+@app.get("/getNumberOfGroups")
+async def fetchgroupNumber():
+    documents = collection.find() 
+    groupNames = {document['group_name'] for document in documents}
+    return len(groupNames)
+
+@app.get("/getMonthWiseMessages/{group_name}")
+async def fetchMonthWiseMessages(group_name:str):
+    documents = collection.find( {"group_name" : group_name} , {"content" : True})
+    monthwise = [0 for i in range(12)]
+    for doc in documents:
+        content = doc["content"]
+
+    messages_monthwise = defaultdict(int)
+    for date, messages in content.items():
+        month = date.split("/")[1]
+        messages_monthwise[month] += len(messages)
+        # messages_monthwise[month_names[month]] += len(messages)
+
+    for month, message_count in messages_monthwise.items():
+        # print(f"Month: {month}, Number of Messages: {message_count}")
+        monthwise[int(month)-1] = message_count
+
+    return monthwise
+
+
+@app.get("/MessagesForCharts") # {moderator} to be added, currently taking all groups in collection
+async def fetchMessagesForCharts():
+    documents = collection.find({}, {'group_name': 1}) 
+    groupNames = {document['group_name'] for document in documents}
+
+    groupwisemessages = {} # group_name : [,,,,,,]
+    for group_name in groupNames:
+        groupwisemessages[group_name] = await fetchMonthWiseMessages(group_name)
+
+    return groupwisemessages
+
+@app.get("/MessagesForBarCharts")
+async def fetchMessagesForBarCharts():
+    groupwisemessages = await fetchMessagesForCharts()
+    total_monthwise = [0 for i in range(12)]
+    for group_name in groupwisemessages:
+        for i in range(12):
+            total_monthwise[i] += groupwisemessages[group_name][i]
+    
+    return total_monthwise
+
+    # print(groupwisemessages)
+
+
+@app.get("/MessageSentToday/{group_name}")
+async def fetchMessagesSentToday(group_name:str):
+    today_date = datetime.today().date()
+    formatted_date = today_date.strftime("%d/%m/%Y")
+
+    today_date  = "11/7/23"
+    documents = collection.find( {"group_name" : group_name}, {"content" : True})
+    for doc in documents:
+        content = doc["content"]
+  
+    # print(type(formatted_date))
+    return len(content[today_date])
 
 # UPDATE REQUESTS
 async def addMessage(grpmsg : groupMessages):
     print(grpmsg.model_dump())
     data =  collection.insert_one(grpmsg.model_dump())
     return "Message added to the database"
-    
+
 def fetchGroupNames():
     documents = collection.find({}, {'group_name': 1}) 
     groupNames = {document['group_name'] for document in documents}
@@ -240,16 +326,28 @@ async def removeGroupAdmin(form : FormData):
             return "Admin not found in the group"
     else:
         return "No such group number"
+    
+ 
 
 
+
+class FormDataMember(BaseModel):
+    userId: str
+    userName: str
+    mobileNumber: str
+    altMobileNumber: str
+    group_name: str 
 
 # add member
 @app.post("/addGroupMember")
-async def addGroupMember(form : FormData):
+async def addGroupMember(form : FormDataMember):
+    print(form)
+    group_name = form.group_name
+    member = form.userName
+    mobile_number = form.mobileNumber  # used for changing
+    alt_mobile_number = form.altMobileNumber # adding mobile number
 
-    group_name = form.currentGroupName
-    member = form.groupMember
-    print("here"+form.newGroupName)
+
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         data["members"][member] = True
@@ -263,9 +361,12 @@ async def addGroupMember(form : FormData):
 
 # remove member
 @app.post("/removeGroupMember")
-async def removeGroupMember(form : FormData):
-    group_name = form.currentGroupName
-    member = form.groupMember
+async def removeGroupMember(form : FormDataMember):
+    group_name = form.group_name
+    member = form.userName
+    mobile_number = form.mobileNumber
+    alt_mobile_number = form.altMobileNumber
+
     data =  await fetchGroupInfo(group_name)
     if data!= None:
         try:
@@ -280,6 +381,68 @@ async def removeGroupMember(form : FormData):
     else:
         return "No such group number"
 
+# add phone number
+@app.post("/addMobileNumber")
+async def addPhoneNumber(form : FormDataMember):
+    # add check if member is present in the group
+
+    group_name = form.group_name
+    member = form.userName
+    mobile_number = form.mobileNumber
+    alt_mobile_number = form.altMobileNumber
+
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        if mobile_number != "":
+            try:
+                data["phone_dict"][member].append(mobile_number)
+            except:
+                data["phone_dict"][member] = [mobile_number]
+        else:
+            try:
+                data["phone_dict"][member].append(alt_mobile_number)
+            except:
+                data["phone_dict"][member] = [alt_mobile_number]
+        update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"phone_dict" : data["phone_dict"]}}
+                )
+        return "Phone number added to the group"
+    else:
+        return "No such group number"
+
+
+@app.post("/changeMobileNumber")
+async def changePhoneNumber(form : FormDataMember):
+
+    # TO DO
+    # add check if member is present in the group
+    # if one phone number -> then that one is changed
+    # more than one phone number -> then remove all and add new - seems to be a wrong approach
+
+    group_name = form.group_name
+    member = form.userName
+    mobile_number = form.mobileNumber
+    alt_mobile_number = form.altMobileNumber
+
+    data =  await fetchGroupInfo(group_name)
+    if data!= None:
+        
+        try:
+            data["phone_dict"][member] = [mobile_number]
+            update_data = collection.find_one_and_update(
+                    {"group_name": group_name},
+                    {"$set": {"phone_dict" : data["phone_dict"]}}
+                )
+            return "Phone number Changed in the group"
+        except:
+            # means member not present in the group
+            print("Member not present in the group")
+    
+    else:
+        return "No such group number"
+
+    
 
 # change group name
 @app.post("/changeGroupName")
@@ -342,10 +505,11 @@ async def addPhoneNumbers(group_name:str,name : str, phone_number : int):
         return "Phone number added to the group"
     else:
         return "No such group number"
+    
 
 
-
-@app.post("/uploadfile/")
+# end point connected to Whatsapp.js
+@app.post("/uploadWhatsappfile/")
 async def create_upload_file(file: UploadFile):
 
     content = await file.read()
@@ -402,7 +566,7 @@ async def create_upload_zoom_file(file: UploadFile):
     # print(data)
     # flag = zoom_collection.insert_one(data)
     
-    group_name = 1
+    group_name = 2
 
     if fetchZoomGroupNumber(group_name) == None:
         add_data = zoom_collection.insert_one(data)
@@ -472,3 +636,13 @@ async def create_upload_zoom_attendance(file: UploadFile):
 
 # if __name__ == "__main__":
 #    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+
+
+
+# testing upload file
+@app.post("/test/upload")
+async def upload_pdf(file: UploadFile):
+    # with open(file.filename, "w") as f:
+    #     f.write(file.file.read())
+    print("recieved request from app")
+    return {"filename": file.filename}
