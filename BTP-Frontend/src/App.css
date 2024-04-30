@@ -1,0 +1,109 @@
+/* Ensure that the root div with className "App" is the most specific, 
+   so that the styles defined here take precedence over Bootstrap. */
+   .App .login-container,
+   .App .SignUp-container {
+       max-width: 400px;
+       margin: 0 auto;
+       padding: 20px;
+       text-align: center;
+   }
+     
+   .App .tabs {
+       display: flex;
+       justify-content: center;
+       margin-bottom: 50px;
+       font-size: large;
+   }
+     
+   .App .inactive-tab,
+   .App .active-tab {
+       padding: 10px;
+       cursor: pointer;
+   }
+     
+   .App .active-tab {
+       font-weight: bold;
+       color:#BB5759;
+       font-size: large;
+   }
+     
+   .App input[type="email"],
+   .App input[type="password"] {
+       display: block;
+       width: 90%;
+       margin: 10px auto;
+       padding: 10px;
+       border: 1px solid #ced4da; /* Bootstrap's default border style for input */
+       border-radius: 0.25rem; /* Bootstrap's default border-radius for input */
+       height: calc(1.5em + 0.75rem + 2px); /* Bootstrap's default height for input */
+   }
+     
+   .App .forgot-password {
+       text-align: right;
+       margin-top: 10px; 
+       margin-bottom: 30px;
+       font-style: italic;
+       font-size: small;
+   }
+   
+   .App .role-dropdown,
+   .App select {
+       width: 70%;
+       padding: 10px;
+       margin-bottom: 60px;
+       cursor: pointer;
+       display: block; /* Bootstrap uses display: inline-block by default for select */
+       margin: 0 auto 20px auto; /* Center the select element */
+       border: 1px solid #ced4da; /* Match Bootstrap's border */
+       border-radius: 0.25rem; /* Match Bootstrap's border-radius */
+   }
+     
+   .App .login-button,
+   .App .signUp-button {
+       width: 75%;
+       padding: 10px;
+       background-color: #BB5759;
+       color: white;
+       border: none;
+       cursor: pointer;
+       display: block; /* Add display block to fix any potential issues */
+       margin: 10px auto; /* Center the buttons */
+   }
+     
+   .App .or {
+       margin: 20px 0;
+   }
+   
+   .App .social-logins button {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       width: 70%;
+       margin: 10px auto;
+       padding: 10px;
+       border-radius: 2px;
+       cursor: pointer;
+   }
+   
+   .App .logo {
+       width: 16px;
+       height: 16px;
+       margin-right: 8px;
+   }
+     
+   .App .social-button.apple {
+       background-color: #000;
+       color: white;
+   }
+     
+   .App .social-button.google {
+       background-color: white;
+       color: black;
+       border: 1px solid #ced4da; /* Google button usually has a border */
+   }
+     
+   .App .social-button.facebook {
+       background-color: #395185;
+       color: white;
+   }
+   

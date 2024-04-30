@@ -1,0 +1,106 @@
+/* Login.css */
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+  font-size: large;
+}
+
+.inactive-tab,
+.active-tab {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.active-tab {
+  font-weight: bold;
+  color:#BB5759;
+  font-size: large;
+}
+
+input {
+  display: block;
+  width: 90%;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-top: 10px; 
+  margin-bottom: 30px;
+  font-style: italic;
+  font-size: small;
+}
+
+.role-dropdown {
+  display: block;
+  width: calc(80% - 20px); 
+  margin: 0 auto 20px auto; 
+  padding: 10px;
+  border-radius: 5px; 
+}
+
+select {
+  width: 70%;
+  padding: 10px;
+  margin-bottom: 80px;
+  cursor: pointer;
+}
+
+.login-button {
+  width: 75%;
+  padding: 10px;
+  background-color: #BB5759;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.or {
+  margin: 20px 0;
+}
+
+.social-login-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+.social-logins button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%; /* Adjust width as needed */
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 2px;
+}
+
+.logo {
+  width: 16px;
+  height: 16px; 
+  margin-right: 8px;
+}
+
+.social-button.apple {
+  background-color: #000;
+  color: white;
+}
+
+.social-button.google {
+  background-color: white;
+  color: black;
+}
+
+.social-button.facebook {
+  background-color: #395185;
+  color: white;
+}

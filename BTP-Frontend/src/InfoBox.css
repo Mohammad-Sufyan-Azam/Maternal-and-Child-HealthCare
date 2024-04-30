@@ -1,0 +1,29 @@
+.info-box {
+  text-align: center;
+  padding: 10px;
+  margin: 5px 0; 
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-box .info-icon {
+  color: #f0ad4e;
+  margin-bottom: 10px;
+}
+
+.info-box .info-title {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.info-box .info-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.info-box .card-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}

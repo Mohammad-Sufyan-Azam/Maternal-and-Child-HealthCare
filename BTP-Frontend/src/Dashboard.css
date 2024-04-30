@@ -1,0 +1,28 @@
+.dashboard {
+  padding: 20px;
+}
+
+.info-boxes .col-md-4 {
+  padding: 0 10px; 
+}
+
+.graphs .col-lg-6 {
+  padding: 0 10px; 
+}
+
+.card {
+  margin-bottom: 20px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-group-item-success {
+  text-decoration: line-through;
+  color: grey;
+}
+
+@media (min-width: 992px) {
+  .dashboard {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+  }
+}
