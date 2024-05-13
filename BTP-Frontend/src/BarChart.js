@@ -2,55 +2,17 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import ChartAnnotation from 'chartjs-plugin-annotation';
-import { useState, useEffect } from 'react';
+
 
 Chart.register(ChartAnnotation);
 
 const BarChart = () => {
-  const baseURL = 'http://localhost:8000/' ;
-  const [recdata, setrecdata] = useState([]);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch(baseURL + 'MessagesForBarCharts'); 
-            const data = await response.json();
-            setrecdata(data);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-      };
-      fetchData();
-      }, []);
-
-  console.log(recdata);
-  let final_dataset = [];
-  
-//   let index = 0;
-//   for (let key in recdata) {
-//     if (recdata.hasOwnProperty(key)) {
-//         // console.log(key + ': ' + recdata[key]);
-//         let backgroundColor = `rgb(${75 * index}, ${192 * index}, ${192 * index})`;
-//         let borderColor = `rgba(${75 / index}, ${192 / index}, ${192 / index}, 0.2)`;
-
-//         final_dataset.push( { label: key,
-//           data: recdata[key],
-//           fill: false,
-//           backgroundColor,
-//           borderColor});       
-//           index++; 
-// }
-
-    
-//   }
-
   const data = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [
       {
         label: 'Total Group Activity',
-        data: recdata, 
+        data: [90, 180, 130, 170, 140, 140, 130, 132, 113, 129, 122, 146], 
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1

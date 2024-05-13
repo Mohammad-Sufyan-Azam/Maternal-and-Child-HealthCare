@@ -6,29 +6,55 @@ import appleIcon from './assets/apple.svg';
 import googleIcon from './assets/google.svg';
 import facebookIcon from './assets/facebook.svg';
 
-
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Moderator'); 
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-   
-    console.log({ email, password, role });
-    if (role === 'Moderator') {
-      navigate('/HomePage');
+
+    try {
+      const response = await fetch('http://localhost:4000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (response.ok) {
+        const { token } = await response.json();
+        localStorage.setItem('jwt', token);
+        navigateBasedOnRole(token);
+      } else {
+        alert('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('An error occurred during login. Please try again later.');
     }
-    if(role == 'Controller'){
-      navigate('/ControllerHomePage');
-    } 
-    if(role == 'System Admin'){
-      navigate('/SAHomePage');
-    }
-    else {
-    
-      console.log('Not a Moderator');
+  };
+
+  const navigateBasedOnRole = (token) => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedToken = JSON.parse(window.atob(base64));
+
+    switch (decodedToken.role) {
+      case 'moderator':
+        navigate('/HomePage');
+        break;
+      case 'controller':
+        navigate('/ControllerHomePage');
+        break;
+      case 'systemAdmin':
+        navigate('/SAHomePage');
+        break;
+      default:
+        console.error('Unexpected role:', decodedToken.role);
+        alert('Login failed: Unexpected user role');
+        break;
     }
   };
 
@@ -49,21 +75,13 @@ const Login = () => {
           placeholder="Password"
           required
         />
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="Moderator">Moderator</option>
-          <option value="Controller">Controller</option>
-          <option value="System Admin">System Admin</option>
-        </select>
         <button type="submit" className="login-button">LOGIN</button>
         <div className="or">-OR-</div>
         <div className="social-logins">
           <button type="button" className="social-button google">
             <img src={googleIcon} alt="Google" className="logo" />Continue with Google
           </button>
-          <button type="button" className="social-button facebook">
-            <img src={facebookIcon} alt="Facebook" className="logo" />Sign in with Facebook
-          </button>
-          </div>
+        </div>
       </form>
     </div>
   );

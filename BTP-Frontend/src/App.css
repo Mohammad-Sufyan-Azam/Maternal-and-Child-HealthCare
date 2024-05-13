@@ -7,30 +7,34 @@
        padding: 20px;
        text-align: center;
    }
-     
+ 
+
    .App .tabs {
-       display: flex;
-       justify-content: center;
-       margin-bottom: 50px;
-       font-size: large;
-   }
-     
-   .App .inactive-tab,
-   .App .active-tab {
-       padding: 10px;
-       cursor: pointer;
-   }
-     
-   .App .active-tab {
-       font-weight: bold;
-       color:#BB5759;
-       font-size: large;
-   }
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; /* Keeps the existing space below the tabs */
+    margin-top: 20px; /* Adds space above the tabs to push them down */
+    }
+
+
+    .App .inactive-tab,
+    .App .active-tab {
+        padding: 10px;
+        cursor: pointer;
+        background-color: grey; /* Default inactive color */
+        color: white;
+    }
+
+    .App .active-tab {
+        font-weight: bold;
+        background-color:#BB5759; /* Maroon color for active tabs */
+        color: white;
+    }
      
    .App input[type="email"],
    .App input[type="password"] {
        display: block;
-       width: 90%;
+       width: calc(100% - 20px);
        margin: 10px auto;
        padding: 10px;
        border: 1px solid #ced4da; /* Bootstrap's default border style for input */
@@ -60,8 +64,8 @@
      
    .App .login-button,
    .App .signUp-button {
-       width: 75%;
-       padding: 10px;
+       width: calc(100% - 20px);
+       padding: 10px 0;
        background-color: #BB5759;
        color: white;
        border: none;
@@ -69,10 +73,31 @@
        display: block; /* Add display block to fix any potential issues */
        margin: 10px auto; /* Center the buttons */
    }
-     
+
+   .App .tabs button {
+    margin: 0 10px; /* Adds space between the buttons */
+    padding: 10px 20px; /* Adds padding inside the buttons for a larger clickable area */
+    border: none; /* Removes the border */
+    border-radius: 4px; /* Rounds the corners of the buttons */
+    font-size: 16px; /* Adjusts the font size */
+    font-weight: 500; /* Makes the font a bit bolder */
+    transition: all 0.3s ease; /* Adds a transition effect for hover states and other changes */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for depth */
+    }
+
+    .App .tabs button:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Increases the shadow on hover for a "lifting" effect */
+        transform: translateY(-2px); /* Moves the button up slightly when hovered */
+    }
+
+
    .App .or {
        margin: 20px 0;
    }
+
+   .App .tabs button {
+    margin: 0 30px; /* Adds 10 pixels of margin to the left and right of each button */
+    }
    
    .App .social-logins button {
        display: flex;
@@ -100,10 +125,4 @@
        background-color: white;
        color: black;
        border: 1px solid #ced4da; /* Google button usually has a border */
-   }
-     
-   .App .social-button.facebook {
-       background-color: #395185;
-       color: white;
-   }
-   
+   }   

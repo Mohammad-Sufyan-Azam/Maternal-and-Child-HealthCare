@@ -1,40 +1,16 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import backgroundImage from './assets/WABg.jpeg'; 
-import axios from 'axios';
-
 const WhatsApp = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [optionSelected, setOptionSelected] = useState(null);
-  const [groupSelected, setGroupSelected] = useState(null);
-
   const [userData, setUserData] = useState({
     userId: '',
     userName: '',
     mobileNumber: '',
-    altMobileNumber: '',
-    group_name: ''
+    altMobileNumber: ''
   });
-
-  
-  // MODIFIED
-  const baseURL = 'http://localhost:8000/' ;
-  const [groupNames, setGroupNames] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch(baseURL + 'getGroupNames'); 
-            const data = await response.json();
-            setGroupNames(data);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-      };
-      fetchData();
-      }, []);
-
-  
 
   // Opens file input dialog to choose a file
   const handleUploadClick = () => {
@@ -60,7 +36,7 @@ const WhatsApp = () => {
     const formData = new FormData();
     formData.append('file', selectedFile);
   
-    fetch('http://localhost:8000/uploadWhatsappfile', {
+    fetch('http://localhost:5000/upload', {
       method: 'POST',
       body: formData,
     })
@@ -91,8 +67,7 @@ const WhatsApp = () => {
       userId: '',
       userName: '',
       mobileNumber: '',
-      altMobileNumber: '',
-      group_name: groupSelected 
+      altMobileNumber: ''
     });
   };
 
@@ -106,44 +81,22 @@ const WhatsApp = () => {
   };
 
   // Handles the submission of user data changes
-  const handleSubmitChanges = async () => {
+  const handleSubmitChanges = () => {
     alert(`Changes ready for submission: ${JSON.stringify(userData)}`);
-    let url = baseURL;
-    if (optionSelected === 'AddMember') {url += 'addGroupMember';}
-    if (optionSelected === 'RemoveMember') {url += 'removeGroupMember';}
-    if (optionSelected === 'ChangeMobileNumber') {url += 'changeMobileNumber';}
-    if (optionSelected === 'AddAltMobileNumber') {url += 'addMobileNumber';}
-
-    try {
-      const response = await axios.post(url, userData);
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-
-
-
     setUserData({
-      
       userId: '',
       userName: '',
       mobileNumber: '',
-      altMobileNumber: '',
-      group_name: groupSelected
+      altMobileNumber: ''
     });
     setOptionSelected(null);
-    setGroupSelected(null);
-    
-
-
-
   };
 
   return (
     <div style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh' }}>
       <Navbar />
       <Sidebar />
-      <div style={{ margin: '20px' }}>
+      <div style={{ margin: '20px',marginLeft:'280px' }}>
         <h1>WhatsApp Messages</h1>
         <p>Upload and submit files for processing.</p>
         <input 
@@ -159,27 +112,12 @@ const WhatsApp = () => {
         <div style={{ marginTop: '20px', marginBottom: '20px', textAlign: 'center' }}> 
           <h3 style={{ marginTop: '20px' }}>Or</h3> 
         </div>
-        {/* <h1>{groupSelected}</h1>
-        <h1>{optionSelected}</h1> */}
-        <h2>Manually Make Changes</h2>
-        <div  style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '30px' }}>
-           
-            {/* Map over the list of strings and render a button for each string */}
-            {groupNames.map((string, index) => (
-                <button
-                    key={index}
-                    style={{ backgroundColor: 'green', color: 'white', marginRight: '10px' }}
-                    onClick={() => {setGroupSelected(string);setOptionSelected(string)}}
-                >
-                    {string}
-                </button>
-            ))}
-        </div>
         
-        {/* <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '30px' }}>
+        <h2>Manually Make Changes</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '30px' }}>
           <button style={{ backgroundColor: 'green', color: 'white' }} onClick={() => setOptionSelected('group1')}>Group 1</button>
           <button style={{ backgroundColor: 'green', color: 'white' }} onClick={() => setOptionSelected('group2')}>Group 2</button>
-        </div> */}
+        </div>
         
         {optionSelected && (
           <>
@@ -190,7 +128,7 @@ const WhatsApp = () => {
               </label>
               <label style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                 <input type="radio" id="AddAltMobileNumber" value="AddAltMobileNumber" name="option" />
-                <span style={{ marginLeft: '10px' }}>Add Mobile Number</span>
+                <span style={{ marginLeft: '10px' }}>Add Alternative Mobile Number</span>
               </label>
               <label style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
                 <input type="radio" id="AddMember" value="AddMember" name="option" />

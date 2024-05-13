@@ -3,82 +3,35 @@ import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import 'chartjs-plugin-annotation';
 import ChartAnnotation from 'chartjs-plugin-annotation';
-import { useState, useEffect } from 'react';
 
 Chart.register(ChartAnnotation);
 
 const LineChart = () => {
-  const baseURL = 'http://localhost:8000/' ;
-  const [recdata, setrecdata] = useState([]);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch(baseURL + 'MessagesForCharts'); 
-            const data = await response.json();
-            setrecdata(data);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-      };
-      fetchData();
-      }, []);
-
-  // if (recdata !== undefined) {
-  //   let length =  recdata.length;
-  // const finalDataset = Array.from({ length }, () => ({}));
-
-  // for (let i = 0; i < length; i++) {
-  //   finalDataset[i] = {
-  //     label: recdata[i].label,
-  //     data: recdata[i].data,
-  //     fill: false,
-  //     backgroundColor: 'rgb(75,192,192)',
-  //     borderColor: 'rgba(75,192,192,0.2)',
-  //     key: i
-  //   };
-
-  // }
-  // console.log(recdata)
-  // console.log(recdata.length)
-  // console.log(finalDataset);
-  // }
-  let final_dataset = [];
-  const dictionary = {
-    key1: 'value1',
-    key2: 'value2',
-    key3: 'value3'
-  };
-  
-  let index = 0;
-  for (let key in recdata) {
-    if (recdata.hasOwnProperty(key)) {
-        // console.log(key + ': ' + recdata[key]);
-        let backgroundColor = `rgb(${75 * index}, ${192 * index}, ${192 * index})`;
-        let borderColor = `rgba(${75 / index}, ${192 / index}, ${192 / index}, 0.2)`;
-
-        final_dataset.push( { label: key,
-          data: recdata[key],
-          fill: false,
-          backgroundColor,
-          borderColor});       
-          index++; 
-}
-
-    
-  }
-  
-  
-  console.log(final_dataset);
-  
-
-
- 
-  
   const data = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: final_dataset,
+    datasets: [
+      {
+        label: 'G1',
+        data: [65, 59, 80, 81, 56, 55, 40, 60, 65, 59, 80, 81],
+        fill: false,
+        backgroundColor: 'rgb(75,192,192)',
+        borderColor: 'rgba(75,192,192,0.2)',
+      },
+      {
+        label: 'G2',
+        data: [28, 48, 40, 19, 86, 27, 90, 28, 48, 40, 19, 86],
+        fill: false,
+        backgroundColor: 'rgb(255,99,132)',
+        borderColor: 'rgba(255,99,132,0.2)',
+      },
+      {
+        label: 'G3',
+        data: [45, 25, 16, 36, 67, 18, 76, 45, 25, 16, 36, 67],
+        fill: false,
+        backgroundColor: 'rgb(153, 102, 255)',
+        borderColor: 'rgba(153, 102, 255,0.2)',
+      }
+    ],
   };
 
   
@@ -139,14 +92,6 @@ const LineChart = () => {
     },
     maintainAspectRatio: false 
   };
-  const datasets = recdata && Object.keys(recdata).map((label, index) => ({
-    label: label,
-    data: recdata[label],
-    fill: false,
-    backgroundColor: 'rgb(75,192,192)',
-    borderColor: 'rgba(75,192,192,0.2)',
-    key: index
-}));
 
   return (
     <div style={{
@@ -156,10 +101,7 @@ const LineChart = () => {
       height: '70vh' 
     }}>
       <div style={{ width: '900px', height: '400px' }}>
-      
         <Line data={data} options={options} />
-
-        
       </div>
     </div>
   );
